@@ -17,30 +17,22 @@ print(sudoku[0], "\n")
 print("Solution of first sudoku:")
 print(solutions[0])
 
+#def
 
 def sudoku_solver(sudoku):
-    solved = []
     current_state = sudoku
     for y_pos in range(9):
         for x_pos in range(9):
             if current_state[y_pos][x_pos] == 0:
                 for possible in range(1, 10):
-                    print(y_pos, x_pos, possible)
                     if check_move(current_state, y_pos, x_pos, possible):
-                        # make that move
                         current_state[y_pos, x_pos] = possible
-                        # solve the new grid
-                        sudoku_solver(current_state)
-                        # if we reached here that means our prior move was a bad one
+                        current_state = sudoku_solver(current_state)
                         current_state[y_pos, x_pos] = 0
-                        print("back track!")
                 # return to calling with prior state
-                print("aaa ")
-                print(current_state)
-                return current_state
+                return
     # there are no empty cells which means a solution is found
     return current_state
-
 
 def check_move(temp_state, y_pos, x_pos, possible):
     # check rows and cols
