@@ -19,7 +19,8 @@ def solve():
                         grid[y_pos, x_pos] = possible
                         if solve():
                             return True
-                    grid[y_pos, x_pos] = 0
+                        else:
+                            grid[y_pos, x_pos] = 0
     # there are no empty cells which means a solution is found
     print("Yes2")
     print(grid)

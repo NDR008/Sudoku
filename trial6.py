@@ -72,12 +72,17 @@ def sort_by_values_len(d):
 def initial_pass(sudoku):
     zeros = sudoku_zeros(sudoku)
     valid_options = possibilities(zeros, sudoku)
-    for zero_index in zeros:
-        y_pos, x_pos = zero_index
-        valid_option = valid_options[zero_index]
-        if len(valid_option) == 1:
-            sudoku[y_pos, x_pos] = valid_option[0]
-        else:
+    # for zero_index in zeros:
+    #     y_pos, x_pos = zero_index
+    #     valid_option = valid_options[zero_index]
+    #     if len(valid_option) == 1:
+    #         sudoku[y_pos, x_pos] = valid_option[0]
+    #     else:
+    #         return sudoku
+    for k in valid_options:
+        if len(valid_options[k])==1:
+            sudoku[k]=valid_options[k][0]
+        elif len(valid_options[k])>1:
             return sudoku
     return sudoku
 
@@ -95,9 +100,7 @@ def naked(sudoku):
     valid_options = possibilities(zeros, sudoku)
     for (y_pos, x_pos) in zeros:
         c = valid_options[(y_pos, x_pos)]
-        #print("starting c", c)
         for col in range(9):
-            #print("modified c", c)
             if col == x_pos:
                 continue
             elif (y_pos, col) in valid_options:
@@ -106,21 +109,44 @@ def naked(sudoku):
         c = naked_helper(c, [0])
         if len(c) == 1:
             sudoku[(y_pos, x_pos)] = c[0]
+        else:
+            #valid_options = possibilities(zeros, sudoku)
+            for row in range(9):
+                if row == y_pos:
+                    continue
+                elif (row, x_pos) in valid_options:
+                    d = valid_options[(row, x_pos)]
+                    c = naked_helper(c, d)
+            c = naked_helper(c, [0])
+            if len(c) == 1:
+                sudoku[(y_pos, x_pos)] = c[0]
 
-
+            else:
+                #valid_options = possibilities(zeros, sudoku)
+                sub_cell_y = (y_pos // 3) * 3
+                sub_cell_x = (x_pos // 3) * 3
+                for y in range(sub_cell_y, sub_cell_y + 3):
+                    for x in range(sub_cell_x, sub_cell_x + 3):
+                        if x == x_pos and y == y_pos:
+                            continue
+                        elif (y, x) in valid_options:
+                            d = valid_options[(y, x)]
+                            c = naked_helper(c, d)
+                c = naked_helper(c, [0])
+                if len(c) == 1:
+                    sudoku[(y_pos, x_pos)] = c[0]
     return sudoku
 
 
-
-def possibilities(zeros, current_state):
+def possibilities(zeros, sudoku):
     valid_options = {}
     for (y_pos, x_pos) in zeros:
             tmp = []
             for possible in range(1, 10):
-                if check_move(current_state, y_pos, x_pos, possible):
+                if check_move(sudoku, y_pos, x_pos, possible):
                     tmp.append(possible)
-            if len(tmp) > 555:
-                random.shuffle(tmp) #no major gain... but hard 4 went from 5.5s to 0.06s but hard 5 went from 26 to 40
+            #if len(tmp) > 555:
+                #random.shuffle(tmp) #no major gain... but hard 4 went from 5.5s to 0.06s but hard 5 went from 26 to 40
             valid_options[(y_pos, x_pos)] = tmp
     valid_options = sort_by_values_len(valid_options)
     #print(valid_options)
@@ -128,8 +154,16 @@ def possibilities(zeros, current_state):
 
 
 def sudoku_solver(sudoku):
-    sudoku = initial_pass(sudoku)
-    sudoku = naked(sudoku)
+    f = True
+    i = 0
+    while f:
+        i = i + 1
+        start_sudoku = sudoku.copy()
+        sudoku = initial_pass(sudoku)
+        sudoku = naked(sudoku)
+        if np.array_equal(start_sudoku, sudoku):
+            f = False
+
     zeros = sudoku_zeros(sudoku)
     valid_options = possibilities(zeros, sudoku)
     options = sudoku_options(sudoku)
@@ -139,11 +173,9 @@ def sudoku_solver(sudoku):
     else:
         return sol
 
-
 def sudoku_solve(valid_options, zeros, options, current_state):
-    for zero_index in zeros:
-        (y_pos, x_pos) = zero_index
-        valid_values = valid_options[zero_index]
+    for (y_pos, x_pos)in zeros:
+        valid_values = valid_options[(y_pos, x_pos)]
         for possible in valid_values:
             if check_move(current_state, y_pos, x_pos, possible):
                 options[possible-1] += 1
@@ -158,7 +190,6 @@ def sudoku_solve(valid_options, zeros, options, current_state):
                     break
         break
     return current_state
-
 
 
 def check_move(temp_state, y_pos, x_pos, possible):
@@ -179,8 +210,8 @@ SKIP_TESTS = False
 
 def main():
     import time
-    #difficulties = ['very_easy', 'easy', 'medium', 'hard']
-    difficulties = ['hard']
+    difficulties = ['very_easy', 'easy', 'medium', 'hard']
+    #difficulties = ['hard']
 
     for difficulty in difficulties:
         print(f"Testing {difficulty} sudokus")
@@ -191,7 +222,7 @@ def main():
         count = 0
         main_start_time = time.process_time()
         for i in range(len(sudokus)):
-        #for i in [5]:
+        #for i in [10]:
 
             for j in range(1):
                 sudoku = sudokus[i].copy()

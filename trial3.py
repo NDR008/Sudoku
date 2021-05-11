@@ -5,7 +5,8 @@ def sudoku_sovled(sudoku):
         return True
     else:
         return False
-    
+
+
 def sudoku_zeros(sudoku):
     zeros_index = []
     for y_pos in range(9):
@@ -14,13 +15,15 @@ def sudoku_zeros(sudoku):
                 zeros_index.append((y_pos, x_pos))
     return zeros_index
 
+
 def sudoku_solver(sudoku):
     zeros = sudoku_zeros(sudoku)
-    sol=sudoku_solve(zeros, sudoku)
+    sol = sudoku_solve(zeros, sudoku)
     if not sudoku_sovled(sol):
-        return(-1 * np.ones_like(sol))
+        return (-1 * np.ones_like(sol))
     else:
         return sol
+
 
 def sudoku_solve(zeros, current_state):
     for (y_pos, x_pos) in zeros:
@@ -36,13 +39,14 @@ def sudoku_solve(zeros, current_state):
         return current_state
     return current_state
 
+
 def check_move(temp_state, y_pos, x_pos, possible):
     for index in range(9):
         if (temp_state[y_pos][index] == possible) or (temp_state[index][x_pos] == possible):
             return False
     sub_cell_y = (y_pos // 3) * 3
     sub_cell_x = (x_pos // 3) * 3
-    for y in range (sub_cell_y, sub_cell_y+3):
+    for y in range(sub_cell_y, sub_cell_y + 3):
         for x in range(sub_cell_x, sub_cell_x + 3):
             if temp_state[y][x] == possible:
                 return False
@@ -64,7 +68,7 @@ def main():
 
         count = 0
         for i in range(len(sudokus)):
-        #for i in [1]:
+            # for i in [1]:
             sudoku = sudokus[i].copy()
 
             start_time = time.process_time()
@@ -72,10 +76,12 @@ def main():
             end_time = time.process_time()
 
             if np.array_equal(your_solution, solutions[i]):
-                print(f"[OK] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time, "seconds to solve.")
-                count += 1                
+                print(f"[OK] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time,
+                      "seconds to solve.")
+                count += 1
             else:
-                print(f"[NG] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time, "seconds to solve.")
+                print(f"[NG] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time,
+                      "seconds to solve.")
 
         print(f"{count}/{len(sudokus)} {difficulty} sudokus correct")
         if count < len(sudokus):

@@ -1,5 +1,7 @@
 import numpy as np
+import random
 
+#some online tests i found, not used for now.
 a = [[8, 0, 0, 0, 0, 0, 0, 0, 0],
      [0, 0, 3, 6, 0, 0, 0, 0, 0],
      [0, 7, 0, 0, 9, 0, 2, 0, 0],
@@ -35,13 +37,14 @@ extra3 = np.array(c)
 
 extra = [extra1, extra2, extra3]
 
+# a way of checking if we completed the grid (assuming all rules followed)
 def sudoku_sovled(sudoku):
     if np.sum(sudoku) == 405:
         return True
     else:
         return False
 
-
+# find all zeros
 def sudoku_zeros(sudoku):
     zeros_index = []
     for y_pos in range(9):
@@ -66,7 +69,67 @@ def sort_by_values_len(d):
     return z
 
 
+def initial_pass(sudoku):
+    zeros = sudoku_zeros(sudoku)
+    valid_options = possibilities(zeros, sudoku)
+    for zero_index in zeros:
+        y_pos, x_pos = zero_index
+        valid_option = valid_options[zero_index]
+        if len(valid_option) == 1:
+            sudoku[y_pos, x_pos] = valid_option[0]
+        else:
+            return sudoku
+    return sudoku
+
+
+def naked_helper(a,b):
+    z = a.copy()
+    for value in b:
+        if value in z:
+            z.remove(value)
+    return z
+
+
+def naked(sudoku):
+    zeros = sudoku_zeros(sudoku)
+    valid_options = possibilities(zeros, sudoku)
+    for (y_pos, x_pos) in zeros:
+        c = valid_options[(y_pos, x_pos)]
+        #print("starting c", c)
+        for col in range(9):
+            #print("modified c", c)
+            if col == x_pos:
+                continue
+            elif (y_pos, col) in valid_options:
+                d = valid_options[(y_pos, col)]
+                c = naked_helper(c, d)
+        c = naked_helper(c, [0])
+        if len(c) == 1:
+            sudoku[(y_pos, x_pos)] = c[0]
+
+
+    return sudoku
+
+
+
+def possibilities(zeros, current_state):
+    valid_options = {}
+    for (y_pos, x_pos) in zeros:
+            tmp = []
+            for possible in range(1, 10):
+                if check_move(current_state, y_pos, x_pos, possible):
+                    tmp.append(possible)
+            if len(tmp) > 555:
+                random.shuffle(tmp) #no major gain... but hard 4 went from 5.5s to 0.06s but hard 5 went from 26 to 40
+            valid_options[(y_pos, x_pos)] = tmp
+    valid_options = sort_by_values_len(valid_options)
+    #print(valid_options)
+    return valid_options
+
+
 def sudoku_solver(sudoku):
+    sudoku = initial_pass(sudoku)
+    sudoku = naked(sudoku)
     zeros = sudoku_zeros(sudoku)
     valid_options = possibilities(zeros, sudoku)
     options = sudoku_options(sudoku)
@@ -86,7 +149,7 @@ def sudoku_solve(valid_options, zeros, options, current_state):
                 options[possible-1] += 1
                 current_state[y_pos, x_pos] = possible
                 dump, *new_zeros = zeros
-                #new_valid_options = possibilities(zeros, current_state)
+                #new_valid_options = possibilities(new_zeros, current_state) #no major speed gain (+/- same)
                 current_state = sudoku_solve(valid_options, new_zeros, options, current_state)
                 if not sudoku_sovled(current_state):
                     current_state[y_pos, x_pos] = 0
@@ -96,16 +159,6 @@ def sudoku_solve(valid_options, zeros, options, current_state):
         break
     return current_state
 
-def possibilities(zeros, current_state):
-    valid_options = {}
-    for (y_pos, x_pos) in zeros:
-            tmp = []
-            for possible in range(1, 10):
-                if check_move(current_state, y_pos, x_pos, possible):
-                    tmp.append(possible)
-            valid_options[(y_pos, x_pos)] = tmp
-    valid_options = sort_by_values_len(valid_options)
-    return valid_options
 
 
 def check_move(temp_state, y_pos, x_pos, possible):
@@ -126,8 +179,8 @@ SKIP_TESTS = False
 
 def main():
     import time
-    difficulties = ['very_easy', 'easy', 'medium', 'hard']
-    #difficulties = ['hard']
+    #difficulties = ['very_easy', 'easy', 'medium', 'hard']
+    difficulties = ['hard']
 
     for difficulty in difficulties:
         print(f"Testing {difficulty} sudokus")
@@ -136,26 +189,30 @@ def main():
         solutions = np.load(f"data/{difficulty}_solution.npy")
 
         count = 0
+        main_start_time = time.process_time()
         for i in range(len(sudokus)):
-        #for i in [0]:
-            sudoku = sudokus[i].copy()
+        #for i in [5]:
 
-            start_time = time.process_time()
-            your_solution = sudoku_solver(sudoku)
-            end_time = time.process_time()
-            #print(your_solution)
+            for j in range(1):
+                sudoku = sudokus[i].copy()
+                #print(sudoku)
+                #print(solutions[i])
+                start_time = time.process_time()
+                your_solution = sudoku_solver(sudoku)
+                end_time = time.process_time()
+                #print(your_solution)
 
-            if np.array_equal(your_solution, solutions[i]):
-                print(f"[OK] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time,
-                      "seconds to solve.")
-                count += 1
-            else:
-                print(f"[NG] Test {difficulty} sudoku number", i, "This sudoku took", end_time - start_time,
-                      "seconds to solve.")
+                if np.array_equal(your_solution, solutions[i]):
+                    print(f"[OK] Test {difficulty} sudoku number", i,j, "This sudoku took", end_time - start_time,
+                          "seconds to solve.")
+                    count += 1
+                else:
+                    print(f"[NG] Test {difficulty} sudoku number", i,j, "This sudoku took", end_time - start_time,
+                          "seconds to solve.")
 
-        print(f"{count}/{len(sudokus)} {difficulty} sudokus correct")
-        # if count < len(sudokus):
-        #    break
-
-
+            #print(f"{count}/{len(sudokus)} {difficulty} sudokus correct")
+            # if count < len(sudokus):
+            #    break
+        main_end_time = time.process_time()
+        print("total run time :", main_end_time-main_start_time)
 main()

@@ -9,17 +9,33 @@ print(f"sudoku.shape: {sudoku.shape}, sudoku[0].shape: {sudoku[0].shape}, sudoku
 solutions = np.load("data/very_easy_solution.npy")
 print()
 
-# Print the first 9x9 sudoku...
-print("First sudoku:")
-print(sudoku[0], "\n")
 
-# ...and its solution
-print("Solution of first sudoku:")
-print(solutions[0])
 
-#def
+def sudoku_sovled(game):
+    if np.sum(game) == 405:
+        return True
+    else:
+        return False
 
 def sudoku_solver(sudoku):
+    backup = sudoku
+    sol=sudoku_solve(sudoku)
+    if np.array_equal(backup, sol) and not sudoku_sovled(sol):
+        blank = np.array([[-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+                          [-1, -1, -1, -1, -1, -1, -1, -1, -1]])
+        return blank
+    else:
+        return sol
+
+
+def sudoku_solve(sudoku):
     current_state = sudoku
     for y_pos in range(9):
         for x_pos in range(9):
@@ -27,26 +43,25 @@ def sudoku_solver(sudoku):
                 for possible in range(1, 10):
                     if check_move(current_state, y_pos, x_pos, possible):
                         current_state[y_pos, x_pos] = possible
-                        current_state = sudoku_solver(current_state)
-                        current_state[y_pos, x_pos] = 0
-                # return to calling with prior state
-                return
-    # there are no empty cells which means a solution is found
+                        current_state = sudoku_solve(current_state)
+                        if not sudoku_sovled(current_state):
+                            current_state[y_pos, x_pos] = 0
+                        else:
+                            return current_state
+                return current_state
     return current_state
 
 def check_move(temp_state, y_pos, x_pos, possible):
     # check rows and cols
     for index in range(9):
         if (temp_state[y_pos][index] == possible) or (temp_state[index][x_pos] == possible):
-                return False
-
+            return False
     sub_cell_y = (y_pos // 3) * 3
     sub_cell_x = (x_pos // 3) * 3
     for y in range (sub_cell_y, sub_cell_y+3):
         for x in range(sub_cell_x, sub_cell_x + 3):
             if temp_state[y][x] == possible:
                 return False
-    print("Yes we can place in", y_pos, x_pos, possible)
     return True
 
 
@@ -56,10 +71,11 @@ def check_move(temp_state, y_pos, x_pos, possible):
 SKIP_TESTS = False
 
 
-def tests():
+def main():
     import time
-    #difficulties = ['very_easy', 'easy', 'medium', 'hard']
-    difficulties = ['very_easy']
+    difficulties = ['very_easy', 'easy', 'medium', 'hard']
+    #difficulties = ['very_easy', 'easy', 'medium']
+    #difficulties = ['hard']
 
     for difficulty in difficulties:
         print(f"Testing {difficulty} sudokus")
@@ -68,27 +84,28 @@ def tests():
         solutions = np.load(f"data/{difficulty}_solution.npy")
 
         count = 0
-        #for i in range(len(sudokus)):
-        for i in range(1):
+        for i in range(len(sudokus)):
+        #for i in [1]:
             sudoku = sudokus[i].copy()
-            print(f"This is {difficulty} sudoku number", i)
-            print(sudoku)
 
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
             end_time = time.process_time()
 
+            #print(f"This is your solution for {difficulty} sudoku number", i)
+            #print(your_solution)
+            #print(solutions[i])
+            #print("Is your solution correct?")
             print(f"This is your solution for {difficulty} sudoku number", i)
-            print(your_solution)
-
-            print("Is your solution correct?")
             if np.array_equal(your_solution, solutions[i]):
-                print("Yes! Correct solution.")
+                print ("correct")
+                #print(f"Correct solution for {difficulty} sudoku number", i)
                 count += 1
+                print("This sudoku took", end_time - start_time, "seconds to solve.\n")
             else:
-                print("No, the correct solution is:")
-                print(solutions[i])
-                print(your_solution - solutions[i])
+
+                print ("wrong")
+                #print(your_solution - solutions[i])
                 print("This sudoku took", end_time - start_time, "seconds to solve.\n")
 
         print(f"{count}/{len(sudokus)} {difficulty} sudokus correct")
@@ -96,5 +113,7 @@ def tests():
             break
 
 
-if not SKIP_TESTS:
-    tests()
+#if not SKIP_TESTS:
+#    tests()
+
+main()
