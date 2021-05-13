@@ -2,20 +2,9 @@ import numpy as np
 
 # a way of checking if we completed the grid (assuming all rules followed)
 def sudoku_sovled(sudoku):
-    if np.sum(sudoku) == 405 and len(sudoku_zeros(sudoku))==0:
+    if np.sum(sudoku) == 405 and len(sudoku_zeros(sudoku)) == 0:
         return True
-    else:
-        return False
-
-
-# find all zeros
-def sudoku_zeros2(sudoku):
-    zeros_index = []
-    for y_pos in range(9):
-        for x_pos in range(9):
-            if sudoku[y_pos][x_pos] == 0:
-                zeros_index.append((y_pos, x_pos))
-    return zeros_index
+    return False
 
 def sudoku_zeros(sudoku):
     zeros_index = [(y_pos, x_pos) for y_pos in range(9) for x_pos in range(9) if sudoku[y_pos][x_pos] == 0]
@@ -37,13 +26,8 @@ def naked_pairs(sudoku):
     return sudoku
 
 def naked_helper(a,b):
-    z = []
-    for value in a:
-        if value not in b:
-            z.append(value)
-
+    z = [value for value in a if value not in b]
     return z
-    #return list(np.setdiff1d(a, b)) #slower since we need a list
 
 
 def hidden_singles(sudoku):
@@ -51,10 +35,8 @@ def hidden_singles(sudoku):
     valid_options = possibilities(sudoku)
     for (y_pos, x_pos) in zeros:
         option = valid_options[(y_pos, x_pos)]
-        for col in range(9):
-            if col == x_pos:
-                continue
-            elif (y_pos, col) in valid_options:
+        for col in [r for r in range(9) if r != x_pos]:
+            if (y_pos, col) in valid_options:
                 d = valid_options[(y_pos, col)]
                 option = naked_helper(option, d)
             if len(option) < 1:
@@ -70,10 +52,8 @@ def hidden_singles(sudoku):
     valid_options = possibilities(sudoku)
     for (y_pos, x_pos) in zeros:
         option = valid_options[(y_pos, x_pos)]
-        for row in range(9):
-            if row == y_pos:
-                continue
-            elif (row, x_pos) in valid_options:
+        for row in [r for r in range(9) if r != y_pos]:
+            if (row, x_pos) in valid_options:
                 d = valid_options[(row, x_pos)]
                 option = naked_helper(option, d)
         if len(option) == 1:
@@ -84,7 +64,6 @@ def hidden_singles(sudoku):
                 return -1 * np.ones_like(sudoku)
 
     zeros = sudoku_zeros(sudoku)
-    valid_options = possibilities(sudoku)
     for (y_pos, x_pos) in zeros:
         option = valid_options[(y_pos, x_pos)]
         sub_cell_y = (y_pos // 3) * 3
@@ -107,11 +86,7 @@ def possibilities(sudoku):
     zeros = sudoku_zeros(sudoku)
     valid_options = {}
     for (y_pos, x_pos) in zeros:
-            tmp = []
-            for possible in range(1, 10):
-                if check_move(sudoku, y_pos, x_pos, possible):
-                    tmp.append(possible)
-            valid_options[(y_pos, x_pos)] = tmp
+        valid_options[(y_pos, x_pos)] = [opt for opt in range(1, 10) if check_move(sudoku, y_pos, x_pos, opt)]
     return valid_options
 
 
@@ -180,17 +155,14 @@ def sudoku_solver(sudoku):
         finish = sudoku.copy()
         if np.array_equal(start, finish):
             loop_flag = False
-    if np.sum(sudoku) < 0:
-        return sudoku
-    elif sudoku_sovled(sudoku):
+    if np.sum(sudoku) < 0 or sudoku_sovled(sudoku):
         return sudoku
     valid_options = sort_by_values_len(possibilities_pairs(sudoku))
     zeros = sudoku_zeros(sudoku)
     sudoku = sudoku_solve(valid_options, zeros, sudoku)
     if not sudoku_sovled(sudoku):
         return -1 * np.ones_like(sudoku)
-    else:
-        return sudoku
+    return sudoku
 
 
 def sudoku_solve(valid_options, zeros, current_state):
@@ -234,7 +206,7 @@ SKIP_TESTS = False
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    difficulties = ['hard']
+    #difficulties = ['hard']
 
     for difficulty in difficulties:
         print(f"Testing {difficulty} sudokus")
@@ -258,7 +230,7 @@ def main():
 
                 if np.array_equal(your_solution, solutions[i]):
                     #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds to solve.")
-                    print(i, end_time - start_time)
+                    # print(i, end_time - start_time)
                     #print(np.sum(solutions[i]))
                     count += 1
                 else:
