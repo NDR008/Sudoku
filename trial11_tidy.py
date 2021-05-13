@@ -229,7 +229,7 @@ def main():
 
 
                 if np.array_equal(your_solution, solutions[i]):
-                    #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds to solve.")
+                    print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds to solve.")
                     # print(i, end_time - start_time)
                     #print(np.sum(solutions[i]))
                     count += 1
