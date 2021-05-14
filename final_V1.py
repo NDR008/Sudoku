@@ -1,8 +1,8 @@
-import numpy as np #will be re-imported just in case
+import numpy as np  # will be re-imported just in case
 
 
 # a way of checking if we completed the grid (assuming all rules followed)
-def is_sovled(sudoku):
+def is_solved(sudoku):
     if np.sum(sudoku) == 405:
         return True
     return False
@@ -27,7 +27,7 @@ def naked_helper(list1, remove):
 
 def hidden_singles(sudoku):
     zeros = get_zeros(sudoku)
-    options = get_options(sudoku)
+    options = get_options(sudoku)  # using get_options_nkd_paris is even faster on some
     for (y_pos, x_pos) in zeros:
         option = options[(y_pos, x_pos)]
         for col in [r for r in range(9) if r != x_pos]:
@@ -44,7 +44,6 @@ def hidden_singles(sudoku):
                 return -1 * np.ones_like(sudoku)
 
     zeros = get_zeros(sudoku)
-    options = get_options(sudoku)
     for (y_pos, x_pos) in zeros:
         option = options[(y_pos, x_pos)]
         for row in [r for r in range(9) if r != y_pos]:
@@ -69,8 +68,9 @@ def hidden_singles(sudoku):
                     continue
                 elif (y, x) in options:
                     d = options[(y, x)]
-                    option=naked_helper(option, d)
+                    option = naked_helper(option, d)
         if len(option) == 1:
+            # it could be this value will violates other cells (like hard 15)
             if is_move_valid(sudoku, y_pos, x_pos, option[0]):
                 sudoku[(y_pos, x_pos)] = option[0]
             else:
@@ -103,6 +103,7 @@ def get_options_nkd_pairs(sudoku):
                                             val2 = options[(row, col2)]
                                             options[(row, col2)] = naked_helper(val2, val)
 
+# faster to start over since options will be how been reduced
     for col in range(9):
         for row in range(9):
             if (row, col) in options:
@@ -142,64 +143,66 @@ def get_options_nkd_pairs(sudoku):
 
 
 def get_options_nkd_trpl(sudoku):
-    #valid_options = possibilities(sudoku)
-    valid_options = get_options_nkd_pairs(sudoku) # faster on 1 puzzle
+    # this algo only checks rows and columns
+    options = get_options_nkd_pairs(sudoku)  # faster on 1 puzzle I tested
     for row in range(9):
         for col in range(9):
-            if (row, col) in valid_options:
-                val = valid_options[row, col]
+            if (row, col) in options:
+                val = options[row, col]
                 if len(val) == 3:
                     for col1 in range(9):
-                        if (row, col1) in valid_options:
-                            val1 = valid_options[row, col1]
+                        if (row, col1) in options:
+                            val1 = options[row, col1]
                             if col1 != col and len(val1) == 3 and val1 == val:
                                 for col2 in range(9):
-                                    if (row, col2) in valid_options:
-                                        val2 = valid_options[row, col2]
+                                    if (row, col2) in options:
+                                        val2 = options[row, col2]
                                         if col2 != col and col2 != col1 and len(val1) == 3 and val2 == val1:
                                             for col3 in range(9):
-                                                if (row, col3) in valid_options:
+                                                if (row, col3) in options:
                                                     if col3 != col2 and col3 != col1 and col3 != col:
-                                                        val3 = valid_options[(row, col3)]
-                                                        valid_options[(row, col3)] = naked_helper(val3, val)
+                                                        val3 = options[(row, col3)]
+                                                        options[(row, col3)] = naked_helper(val3, val)
+    # faster to start over since options will be how been reduced
     for row in range(9):
         for col in range(9):
-            if (row, col) in valid_options:
-                val = valid_options[row, col]
+            if (row, col) in options:
+                val = options[row, col]
                 if len(val) == 3:
                     for row1 in range(9):
-                        if (row1, col) in valid_options:
-                            val1 = valid_options[row1, col]
+                        if (row1, col) in options:
+                            val1 = options[row1, col]
                             if row1 != row and len(val1) == 3 and val1 == val:
                                 for row2 in range(9):
-                                    if (row2, col) in valid_options:
-                                        val2 = valid_options[row2, col]
+                                    if (row2, col) in options:
+                                        val2 = options[row2, col]
                                         if row2 != row and row2 != row1 and len(val1) == 3 and val2 == val1:
                                             for row3 in range(9):
-                                                if (row3, col) in valid_options:
+                                                if (row3, col) in options:
                                                     if row3 != row2 and row3 != row1 and row3 != row:
-                                                        val3 = valid_options[(row3, col)]
-                                                        valid_options[(row3, col)] = naked_helper(val3, val)
+                                                        val3 = options[(row3, col)]
+                                                        options[(row3, col)] = naked_helper(val3, val)
 
-    return valid_options
+    return options
 
 
-def sudoku_solve(valid_options, zeros, current_state):
+def back_tracker(valid_options, zeros, current_state):
     for (y_pos, x_pos) in zeros:
         valid_values = valid_options[(y_pos, x_pos)]
-        if len(valid_values) < 1: #invalid grid if there is no option...
+        if len(valid_values) < 1:  # invalid grid if there is no option...
             return current_state
         for possible in valid_values:
             if is_move_valid(current_state, y_pos, x_pos, possible):
                 current_state[y_pos, x_pos] = possible
                 dump, *new_zeros = zeros
-                current_state = sudoku_solve(valid_options, new_zeros, current_state)
-                if not is_sovled(current_state):
+                current_state = back_tracker(valid_options, new_zeros, current_state)
+                if not is_solved(current_state):
                     current_state[y_pos, x_pos] = 0
                 else:
                     break
         break
     return current_state
+
 
 def is_move_valid(sudoku, y, x, possible):
     for index in range(9):
@@ -213,46 +216,35 @@ def is_move_valid(sudoku, y, x, possible):
                 return False
     return True
 
-def sort_by_values_len(d):
-    z = {}
-    for k in sorted(d, key=lambda k: len(d[k])):
-        z[k] = d[k]
-    return z
-
 
 def sudoku_solver(sudoku):
-    import random
     loop_flag = True
     while loop_flag:
         start = sudoku.copy()
         sudoku = hidden_singles(sudoku)
-        sudoku = naked_pairs(sudoku)
+        options = get_options_nkd_trpl(sudoku)
+        sudoku = solve_singles(options, sudoku)
         finish = sudoku.copy()
         if np.array_equal(start, finish):
             loop_flag = False
-    # previous algorithms return the -1s or return a solved grid
-    if np.sum(sudoku) < 0 or is_sovled(sudoku):
+    if np.sum(sudoku) < 0 or is_solved(sudoku):
         return sudoku
 
     # if not, got to try brute-force but... (may take long)
-    valid_options = get_options_nkd_trpl(sudoku)
+    options = get_options_nkd_trpl(sudoku)
     zeros = get_zeros(sudoku)
-    sudoku = sudoku_solve(valid_options, zeros, sudoku)
-    if not is_sovled(sudoku):
+    sudoku = back_tracker(options, zeros, sudoku)
+    if not is_solved(sudoku):
         return -1 * np.ones_like(sudoku)
     return sudoku
 
-SKIP_TESTS = False
 
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    #difficulties = ['very_easy', 'easy', 'medium', 'hard']
-    #difficulties = ['extreme']
+    # difficulties = ['hard']
 
     for difficulty in difficulties:
-        print(f"Testing {difficulty} sudokus")
-
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")
         solutions = np.load(f"data/{difficulty}_solution.npy")
 
@@ -262,28 +254,21 @@ def main():
 
             for j in range(1):
                 sudoku = sudokus[i].copy()
-                #print(sudoku)
-                #print(solutions[i])
-                #print(possibilities(sudoku))
+
                 start_time = time.process_time()
                 your_solution = sudoku_solver(sudoku)
                 end_time = time.process_time()
 
-
                 if np.array_equal(your_solution, solutions[i]):
-                    print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds to solve.")
-                    #print(i, "\t", end_time - start_time)
-                    #print(np.sum(solutions[i]))
+                    # print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
+                    print(end_time - start_time)
                     count += 1
                 else:
-                    print(f"!!!!!!!!!!!![[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds to solve.")
+                    print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
                     print(your_solution)
 
-
-        if count != len(sudokus):
-            print("SHIIIIIIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTTT")
-            # if count < len(sudokus):
-            #    break
         main_end_time = time.process_time()
         print("total run time :", main_end_time-main_start_time)
+
+
 main()
