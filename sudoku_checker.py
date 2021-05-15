@@ -10,8 +10,8 @@ def as_string(sudoku):
 
 def main():
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    diff = 2
-    puzzle = 5
+    diff = 4
+    puzzle = 10
     difficulty = difficulties[diff]
 
     sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -29,7 +29,7 @@ def main():
     print()
     print("Sudoku Solution")
     print(solution)
-    check_possible(sudoku)
+    print(check_possible(sudoku))
 
 
 def check_possible(sudoku):
@@ -46,7 +46,6 @@ def check_possible(sudoku):
             cols_set.append(inds)
             
         # # check rows and columns
-        type_ = ['row', 'col']
         for t, inds_set in enumerate([rows_set, cols_set]):
             for k, inds in enumerate(inds_set):
                 arr = [sudoku[i][j] for i, j in inds]
@@ -55,7 +54,6 @@ def check_possible(sudoku):
                     return 
                 arr += list(get_candidates(sudoku, inds[0], inds[-1]))
                 possible = all_exist(arr)
-                print(arr)
                 if not possible:
                     print("not possible1")
                     return False
@@ -70,7 +68,7 @@ def check_possible(sudoku):
                         sub_box.append(sudoku[y,x])
 
                 if not no_duplicates(sub_box):
-                    print("duplicate1")
+                    print("duplicate2")
                     return 
                 
                 full_options = get_options_full(sudoku)             
@@ -78,11 +76,9 @@ def check_possible(sudoku):
                     for j in range(j0, j0 + 3):
                         full_opt = set(full_options[i,j])
                         sub_box += full_opt
-                        #print(sub_box)
                 possible = all_exist(sub_box)
-                #print(possible)
                 if not possible:
-                    print("not possible1")
+                    print("not possible2")
                     return False
         return True
 

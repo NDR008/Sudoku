@@ -93,7 +93,6 @@ def all_exist(rcb):
     for x in rcb:
         count[x] += 1
     for c in count[1:]:  # exclude 0:
-        print(c)
         if c == 0:
             return False
     return True
@@ -103,9 +102,9 @@ def get_options_full(sudoku):
     for y in range(9):
         for x in range(9):
             if sudoku[y][x] == 0:
-                options[(y, x)] = set()
-            else:
                 options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
+            else:
+                options[(y, x)] = []
     return options
 
 def get_options(sudoku):
@@ -232,6 +231,7 @@ def back_tracker(valid_options, zeros, current_state):
         break
     return current_state
 
+
 def check_possible(sudoku):
         """ check if each row/column/box can have all unique elements"""
         #get rows
@@ -244,19 +244,18 @@ def check_possible(sudoku):
         for j in range(9):
             inds = [(i, j) for i in range(9)]
             cols_set.append(inds)
+            
         # # check rows and columns
-        type_ = ['row', 'col']
         for t, inds_set in enumerate([rows_set, cols_set]):
             for k, inds in enumerate(inds_set):
                 arr = [sudoku[i][j] for i, j in inds]
                 if not no_duplicates(arr):
-                    print("duplicate1")
-                    return False
+                    #print("duplicate1")
+                    return 
                 arr += list(get_candidates(sudoku, inds[0], inds[-1]))
-                print(arr)
                 possible = all_exist(arr)
                 if not possible:
-                    print("not possible1")
+                    #print("not possible1")
                     return False
         # check boxes
         for i0 in [0,3,6]:
@@ -269,7 +268,7 @@ def check_possible(sudoku):
                         sub_box.append(sudoku[y,x])
 
                 if not no_duplicates(sub_box):
-                    print("duplicate1")
+                    #print("duplicate2")
                     return 
                 
                 full_options = get_options_full(sudoku)             
@@ -277,11 +276,9 @@ def check_possible(sudoku):
                     for j in range(j0, j0 + 3):
                         full_opt = set(full_options[i,j])
                         sub_box += full_opt
-                        print(sub_box)
                 possible = all_exist(sub_box)
-                print(possible)
                 if not possible:
-                    print("not possible1")
+                    #print("not possible2")
                     return False
         return True
 
@@ -298,7 +295,6 @@ def get_candidates(sudoku, start, end):
             candidates = candidates | full_opt # grow the list with all that we've seen
             #print(candidates)        
     return candidates
-
 
 #rcb
 def no_duplicates(rcb):
@@ -338,7 +334,8 @@ def is_move_valid(sudoku, y, x, possible):
 
 def sudoku_solver(sudoku):
     loop_flag = True
-    check_possible(sudoku)
+    if not check_possible(sudoku):
+        return -1 * np.ones_like(sudoku)
     while loop_flag:
         start = sudoku.copy()
         sudoku = hidden_singles(sudoku)
@@ -353,7 +350,13 @@ def sudoku_solver(sudoku):
         # maybe we cannot do more...
         if np.array_equal(start, finish):
             loop_flag = False
-            
+
+    # this is a slow check, but it can catch some unsolvable cases
+    if is_solved(sudoku):
+        return sudoku
+    elif not check_possible(sudoku):
+        return -1 * np.ones_like(sudoku)
+
     # if not, got to try brute-force but... (may take long)
     options = get_options_nkd_trpl(sudoku)
     zeros = get_zeros(sudoku)
@@ -366,7 +369,7 @@ def sudoku_solver(sudoku):
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    difficulties = ['medium']
+    difficulties = ['extreme']
 
     for difficulty in difficulties:
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -375,23 +378,22 @@ def main():
         count = 0
         main_start_time = time.process_time()
         #for i in range(len(sudokus)):
-        for i in [5]:
+        for i in [10]:
             sudoku = sudokus[i].copy()
-
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
             end_time = time.process_time()
 
+
             if np.array_equal(your_solution, solutions[i]):
-                print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
-                # print(end_time - start_time)
+                #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
+                print(end_time - start_time)
                 count += 1
             else:
                 print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
                 print(your_solution)
-
+        print()
         main_end_time = time.process_time()
         print("total run time :", main_end_time-main_start_time)
-
 
 main()
