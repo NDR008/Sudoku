@@ -10,8 +10,8 @@ def as_string(sudoku):
 
 def main():
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    diff = 4
-    puzzle = 9
+    diff = 2
+    puzzle = 5
     difficulty = difficulties[diff]
 
     sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -34,7 +34,7 @@ def main():
 
 def check_possible(sudoku):
         """ check if each row/column/box can have all unique elements"""
-        # get rows
+        #get rows
         rows_set = []
         for i in range(9):
             inds = [(i, j) for j in range(9)]
@@ -45,17 +45,19 @@ def check_possible(sudoku):
             inds = [(i, j) for i in range(9)]
             cols_set.append(inds)
             
-        # check rows and columns
+        # # check rows and columns
         type_ = ['row', 'col']
         for t, inds_set in enumerate([rows_set, cols_set]):
             for k, inds in enumerate(inds_set):
                 arr = [sudoku[i][j] for i, j in inds]
                 if not no_duplicates(sudoku, arr):
-                    return False, 'Duplicate values in %s %d' % (type_[t], k)
+                    print("duplicate1")
+                    return 
                 arr += list(get_candidates(sudoku, inds[0], inds[-1]))
-                possible, missing_num = all_exist(arr)
+                possible = all_exist(arr)
                 if not possible:
-                    return False, '%d not placeable in %s %d' % (missing_num, type_[t], k)
+                    print("not possible1")
+                    return False
         # check boxes
         for i0 in [0,3,6]:
             for j0 in [0,3,6]:
@@ -67,16 +69,21 @@ def check_possible(sudoku):
                         sub_box.append(sudoku[y,x])
 
                 if not no_duplicates(sudoku, sub_box):
-                    return False, 'Duplicate values in box (%d, %d)' % (i0, j0)
+                    print("duplicate1")
+                    return 
                 
-                
-                #for i in range(i0, i0 + BOX_SIZE):
-                #    for j in range(j0, j0 + BOX_SIZE):
-                #        arr += list(self.candidates[i][j])
-                #possible, missing_num = self.all_exist(arr)
-                #if not possible:
-                #    return False, '%d not placeable in box (%d, %d)' % (missing_num, i0, j0)
-        #return True, None
+                full_options = get_options_full(sudoku)             
+                for i in range(i0, i0 + 3):
+                    for j in range(j0, j0 + 3):
+                        full_opt = set(full_options[i,j])
+                        sub_box += full_opt
+                        print(sub_box)
+                possible = all_exist(sub_box)
+                print(possible)
+                if not possible:
+                    print("not possible1")
+                    return False
+        return True
 
 
 def get_candidates(sudoku, start, end):
@@ -85,15 +92,11 @@ def get_candidates(sudoku, start, end):
     full_options = get_options_full(sudoku)
     for i in range(start[0], end[0] + 1):
         for j in range(start[1], end[1] + 1):
-
-            if full_options[i,j] == ['X']:
-                full_opt = set()
-            else:
-                full_opt = set(full_options[i,j])
-            print()
-            print("First", i,j, candidates, full_opt)
-            candidates = candidates | full_opt
-            print(candidates)        
+            full_opt = set(full_options[i,j])
+            #print()
+            #print("First", i,j, candidates, full_opt)
+            candidates = candidates | full_opt # grow the list with all that we've seen
+            #print(candidates)        
     return candidates
 
 
@@ -113,11 +116,11 @@ def all_exist(rcb):
     count = [0] * 10
     for x in rcb:
         count[x] += 1
-    missing = None
-    for num, c in enumerate(count[1:]):  # exclude 0:
+    for c in count[1:]:  # exclude 0:
+        #print(c)
         if c == 0:
-            return False, num+1  # no value or candidate exists
-    return True, missing
+            return False
+    return True
 
 ## copied stuff from my code 
 def get_options_full(sudoku):
@@ -127,7 +130,7 @@ def get_options_full(sudoku):
             if sudoku[y][x] == 0:
                 options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
             else:
-                options[(y, x)] = ["X"]
+                options[(y, x)] = []
     return options		
 
 def is_move_valid(sudoku, y, x, possible):
