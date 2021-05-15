@@ -1,6 +1,5 @@
 import numpy as np  # will be re-imported just in case
 
-
 # a way of checking if we completed the grid (assuming all rules followed)
 def is_solved(sudoku):
     if np.sum(sudoku) == 405:
@@ -215,6 +214,7 @@ def get_options_nkd_trpl(sudoku):
 
 
 def back_tracker(valid_options, zeros, current_state):
+    
     for (y_pos, x_pos) in zeros:
         valid_values = valid_options[(y_pos, x_pos)]
         if len(valid_values) < 1:  # invalid grid if there is no option...
@@ -369,7 +369,7 @@ def sudoku_solver(sudoku):
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    difficulties = ['extreme']
+    #difficulties = ['extreme']
 
     for difficulty in difficulties:
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")

@@ -26,7 +26,7 @@ def naked_helper(list1, remove):
 
 def hidden_singles(sudoku):
     zeros = get_zeros(sudoku)
-    options = get_options(sudoku)  # using get_options_nkd_paris is even faster on some
+    options = get_options(sudoku)
     for (y_pos, x_pos) in zeros:
         option = options[(y_pos, x_pos)]
         for col in [r for r in range(9) if r != x_pos]:
@@ -103,8 +103,16 @@ def get_options(sudoku):
         options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
     return options
 
+
 def get_options_nkd_pairs(sudoku):
     options = get_options(sudoku)
+    options = get_options_nkd_pairs_row(options)
+    options = get_options_nkd_pairs_col(options)
+    options = get_options_nkd_pairs_box(options)
+    return options
+
+
+def get_options_nkd_pairs_row(options):
     for row in range(9):
         for col in range(9):
             if (row, col) in options:
@@ -119,8 +127,10 @@ def get_options_nkd_pairs(sudoku):
                                         if col2 != col and col2 != col1:
                                             val2 = options[(row, col2)]
                                             options[(row, col2)] = naked_helper(val2, val)
+    return options
 
-# faster to start over since options will be how been reduced
+
+def get_options_nkd_pairs_col(options):
     for col in range(9):
         for row in range(9):
             if (row, col) in options:
@@ -135,23 +145,24 @@ def get_options_nkd_pairs(sudoku):
                                         if row2 != row and row2 != row1:
                                             val2 = options[(row2, col)]
                                             options[(row2, col)] = naked_helper(val2, val)
+    return options
 
+
+def get_options_nkd_pairs_box(options):
     for row in [0, 3, 6]:
         for col in [0, 3, 6]:
-            suby = (row // 3) * 3
-            subx = (col // 3) * 3
-            for y in range(suby, suby + 3):
-                for x in range(subx, subx + 3):
+            for y in range(row, row + 3):
+                for x in range(col, col + 3):
                     if (y, x) in options:
                         val = options[y, x]
                         if len(val) == 2:
-                            for y1 in range(suby, suby + 3):
-                                for x1 in range(subx, subx + 3):
+                            for y1 in range(row, row + 3):
+                                for x1 in range(col, col + 3):
                                     if (y1, x1) in options:
                                         val1 = options[y1, x1]
                                         if (y1, x1) != (y, x) and len(val1) == 2 and val == val1:
-                                            for y2 in range(suby, suby + 3):
-                                                for x2 in range(subx, subx + 3):
+                                            for y2 in range(row, row + 3):
+                                                for x2 in range(col, col + 3):
                                                     if (y2, x2) in options:
                                                         if (y2, x2) != (y, x) and (y2, x2) != (y1, x1):
                                                             val2 = options[(y2, x2)]
@@ -161,7 +172,9 @@ def get_options_nkd_pairs(sudoku):
 
 def get_options_nkd_trpl(sudoku):
     # this algo only checks rows and columns
+    # it is not a perfect naked triple algo
     options = get_options_nkd_pairs(sudoku)  # faster on 1 puzzle I tested
+    #sub-box not working
     for row in range(9):
         for col in range(9):
             if (row, col) in options:
@@ -201,6 +214,31 @@ def get_options_nkd_trpl(sudoku):
                                                         val3 = options[(row3, col)]
                                                         options[(row3, col)] = naked_helper(val3, val)
 
+    # very broken
+    # for row in [0, 3, 6]:
+    #     for col in [0, 3, 6]:
+    #         for y in range(row, row + 3):
+    #             for x in range(col, col + 3):
+    #                 if (y, x) in options:
+    #                     val = options[y, x]
+    #                     if len(val) == 3:
+    #                         for y1 in range(row, row + 3):
+    #                             for x1 in range(col, col + 3):
+    #                                 if (y1, x1) in options:
+    #                                     val1 = options[y1, x1]
+    #                                     if (y1, x1) != (y, x) and len(val1) == 3 and val == val1:
+    #                                         for y2 in range(row, row + 3):
+    #                                             for x2 in range(col, col + 3):
+    #                                                 if (y2, x2) in options:
+    #                                                     val2 = options[(y2, x2)]
+    #                                                     if (y2, x2) != (y1, x1) and (y2, x2) != (y, x) and len(val1) == 3 and val2 == val1:
+    #                                                         for y3 in range(row, row + 3):
+    #                                                             for x3 in range(col, col + 3):
+    #                                                                 if (y3, x3) != (y2, x2) and (y3, x3) != (y1, x1) and (y3, x3) != (y, x) :
+    #                                                                     #print((y, x), (y1, x2), (y3, x3))
+    #                                                                     val3 = options[(y2, x2)]
+    #                                                                     if len(val3) > 3:
+    #                                                                         options[(y3, x3)] = naked_helper(val3, val)
 
     return options
 
@@ -339,11 +377,15 @@ def sudoku_solver(sudoku):
     while loop_flag:
         start = sudoku.copy()
         sudoku = hidden_singles(sudoku)
+        # hidden singles can generate -1s
+        if np.any(sudoku == -1):
+            return -1 * np.ones_like(sudoku)
+        #print(sudoku)
         options = get_options_nkd_trpl(sudoku)
         sudoku = solve_singles(options, sudoku)
         
         # maybe we solved it
-        if np.sum(sudoku) < 0 or is_solved(sudoku):
+        if is_solved(sudoku):
             return sudoku
         finish = sudoku.copy()
         
@@ -358,7 +400,6 @@ def sudoku_solver(sudoku):
         return sudoku
     elif not check_valid_state(sudoku):
         return -1 * np.ones_like(sudoku)
-
     # if not, got to try brute-force but... (may take long)
     options = get_options_nkd_trpl(sudoku)
     zeros = get_zeros(sudoku)
@@ -371,7 +412,7 @@ def sudoku_solver(sudoku):
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    #difficulties = ['extreme']
+    #difficulties = ['hard']
 
     for difficulty in difficulties:
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -381,7 +422,7 @@ def main():
         main_start_time = time.process_time()
         print(difficulty)
         for i in range(len(sudokus)):
-        #for i in [10]:
+        #for i in [5]:
             sudoku = sudokus[i].copy()
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
@@ -394,6 +435,7 @@ def main():
             else:
                 print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
                 print(your_solution)
+                print(solutions[i])
         main_end_time = time.process_time()
         print("total run time :", main_end_time-main_start_time)
         print()

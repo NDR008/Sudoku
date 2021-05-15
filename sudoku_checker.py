@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import combinations
 
 def as_string(sudoku):
     str_sudoku = ""
@@ -10,8 +11,8 @@ def as_string(sudoku):
 
 def main():
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    diff = 4
-    puzzle = 10
+    diff = 2
+    puzzle = 7
     difficulty = difficulties[diff]
 
     sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -21,6 +22,41 @@ def main():
     solution = solutions[puzzle].copy()
 
     print("Sudoku Puzzle")
+    print(sudoku)
+    print()
+    options = get_options(sudoku)
+    row_vals = val_can_go_row(sudoku)
+    col_vals = val_can_go_col(sudoku)
+    cross = [row_vals, col_vals]
+    for each in cross:
+        for individual in each:
+            uniques = []  # final set of unique candidates to return
+            uniques_temp = {2: [], 3: []}  # potential unique candidates
+            for num, group_inds in enumerate(individual):
+                c = len(group_inds)
+                if c == 1:
+                    uniques.append((group_inds, [num]))
+                if c == 2:
+                    uniques_temp[2].append(num)
+                if c == 3:
+                    uniques_temp[3].append(num)
+            uniques_temp[3] += uniques_temp[2]
+            for c in [2]:
+                # make every possible combination
+                for combo in list(combinations(uniques_temp[c], c)):
+                    group_inds = set(individual[combo[0]])
+                    for k in range(1, c):
+                        # if positions are shared, this will not change the length
+                        group_inds = group_inds | set(individual[combo[k]])
+                    if len(group_inds) == c:
+                        # unique combo (pair or triple) found
+                        uniques.append((list(group_inds), combo))
+            print(uniques)
+            for each in uniques:
+                print("at ", each[0], "put", each[1])
+                sudoku[each[0][0]] = each[1][0]
+            #for inds_combo, combo in uniques:
+            #return uniques
     print(sudoku)
     print()
     print("As 1 line")
@@ -129,6 +165,41 @@ def get_options_full(sudoku):
             else:
                 options[(y, x)] = []
     return options		
+
+
+def get_options(sudoku):
+    zeros = get_zeros(sudoku)
+    options = {}
+    for (y, x) in zeros:
+        options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
+    return options
+
+
+def get_zeros(sudoku):
+    zeros_index = [(y, x) for y in range(9) for x in range(9) if sudoku[y][x] == 0]
+    return zeros_index
+
+def val_can_go_row(sudoku):
+    val_by_row = []
+    options = get_options_full(sudoku)
+    for row in range(9):
+        count = [[] for _ in range(10)] # for 9 cells and a value
+        for col in range (9):
+            for num in options[(row,col)]:
+                count[num].append((row,col))
+        val_by_row.append(count)
+    return val_by_row
+
+def val_can_go_col(sudoku):
+    val_by_col = []
+    options = get_options_full(sudoku)
+    for col in range(9):
+        count = [[] for _ in range(10)] # for 9 cells and a value
+        for row in range (9):
+            for num in options[(row,col)]:
+                count[num].append((row,col))
+        val_by_col.append(count)
+    return val_by_col
 
 def is_move_valid(sudoku, y, x, possible):
     for index in range(9):

@@ -182,8 +182,8 @@ def get_options_nkd_trpl(sudoku):
                                                         options[(row, col3)] = naked_helper(val3, val)
 
     # faster to start over since options will be how been reduced
-    for row in range(9):
-        for col in range(9):
+    for col in range(9):
+        for row in range(9):
             if (row, col) in options:
                 val = options[row, col]
                 if len(val) == 3:
@@ -200,6 +200,7 @@ def get_options_nkd_trpl(sudoku):
                                                     if row3 != row2 and row3 != row1 and row3 != row:
                                                         val3 = options[(row3, col)]
                                                         options[(row3, col)] = naked_helper(val3, val)
+
 
     return options
 
@@ -250,21 +251,24 @@ def check_valid_state(sudoku):
                 return False
 
     # check boxes
-    for i0 in [0,3,6]:
-        for j0 in [0,3,6]:
-            suby = (i0 // 3) * 3
-            subx = (j0 // 3) * 3
+
+    for y0 in [0,3,6]:
+        for x0 in [0,3,6]:
             sub_box = []
-            for y in range(suby, suby + 3):
-                for x in range(subx, subx + 3):
+            for y in range(y0, y0 + 3):
+                for x in range(x0, x0 + 3):
                     sub_box.append(sudoku[y, x])
+                    #all the values of a sub-box
             if not all_single_qty(sub_box):
-                return
+                return False
+
             full_options = get_options_full(sudoku)
-            for i in range(i0, i0 + 3):
-                for j in range(j0, j0 + 3):
-                    full_opt = set(full_options[i,j])
+            for y in range(y0, y0 + 3):
+                for x in range(x0, x0 + 3):
+                    full_opt = set(full_options[y,x])
                     sub_box += full_opt
+                    # besides the values we, if we add the options
+                    # do we have no more
             possible = all_available(sub_box)
             if not possible:
                 return False
@@ -277,11 +281,11 @@ def scan_options(sudoku, range_cells):
     # and performs the union with each cell in an rcb
     first_cell, last_cell = range_cells
     scanned = set()
-    full_options = get_options_full(sudoku)
+    full_opt = get_options_full(sudoku)
     for y in range(first_cell[0], last_cell[0] + 1):
         for x in range(first_cell[1], last_cell[1] + 1):
-            full_opt = set(full_options[y,x])
-            scanned = scanned | full_opt
+            sub_opt = set(full_opt[y, x])
+            scanned = scanned | sub_opt
     return scanned
 
 

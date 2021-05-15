@@ -76,22 +76,12 @@ def hidden_singles(sudoku):
                 return -1 * np.ones_like(sudoku)
     return sudoku
 
-def no_duplicates(sudoku, rcb):
-    count = [0] * (10)
-    for x in rcb:
-        count[x] += 1
-
-    for c in count[1:]:  # exclude 0:
-        if c > 1:
-            return False  # more than 1 of value
-    return True
-
 def all_exist(rcb):
-    """ verify that there is at least one of each number present """
+    #checks that all numbers are available
     count = [0] * 10
     for x in rcb:
         count[x] += 1
-    for c in count[1:]:  # exclude 0:
+    for c in count[1:]:
         if c == 0:
             return False
     return True
@@ -215,7 +205,6 @@ def get_options_nkd_trpl(sudoku):
 
 
 def back_tracker(valid_options, zeros, sudoku):
-    
     for (y_pos, x_pos) in zeros:
         valid_values = valid_options[(y_pos, x_pos)]
         if len(valid_values) < 1:  # invalid grid if there is no option...
@@ -233,91 +222,95 @@ def back_tracker(valid_options, zeros, sudoku):
     return sudoku
 
 
-def check_possible(sudoku):
-        """ check if each row/column/box can have all unique elements"""
-        #get rows
-        rows_set = []
-        for i in range(9):
-            inds = [(i, j) for j in range(9)]
-            rows_set.append(inds)
-        # get columns
-        cols_set = []
-        for j in range(9):
-            inds = [(i, j) for i in range(9)]
-            cols_set.append(inds)
-            
-        # # check rows and columns
-        for t, inds_set in enumerate([rows_set, cols_set]):
-            for k, inds in enumerate(inds_set):
-                arr = [sudoku[i][j] for i, j in inds]
-                if not no_duplicates(arr):
-                    #print("duplicate1")
-                    return 
-                arr += list(get_candidates(sudoku, inds[0], inds[-1]))
-                possible = all_exist(arr)
-                if not possible:
-                    #print("not possible1")
-                    return False
-        # check boxes
-        for i0 in [0,3,6]:
-            for j0 in [0,3,6]:
-                suby = (i0 // 3) * 3
-                subx = (j0 // 3) * 3
-                sub_box = []
-                for y in range(suby, suby + 3):
-                    for x in range(subx, subx + 3):\
-                        sub_box.append(sudoku[y,x])
+def check_valid_state(sudoku):
+    # element_row
+    rows_set = []
+    for y in range(9):
+        tmp_index = [(y, x) for x in range(9)]
+        rows_set.append(tmp_index)
 
-                if not no_duplicates(sub_box):
-                    #print("duplicate2")
-                    return 
-                
-                full_options = get_options_full(sudoku)             
-                for i in range(i0, i0 + 3):
-                    for j in range(j0, j0 + 3):
-                        full_opt = set(full_options[i,j])
-                        sub_box += full_opt
-                possible = all_exist(sub_box)
-                if not possible:
-                    #print("not possible2")
-                    return False
-        return True
+    # element_col
+    cols_set = []
+    for x in range(9):
+        tmp_index = [(y, x) for y in range(9)]
+        cols_set.append(tmp_index)
+
+    # check rows and columns
+    for row_col_set in [rows_set, cols_set]:
+        for index in row_col_set:
+            check_list = [sudoku[y][x] for y, x in index]
+
+            if not all_single_qty(check_list):
+                return False
+
+            range_cells = (index[0], index[len(index)-1])
+            check_list += list(scan_options(sudoku, range_cells))
+            possible = all_available(check_list)
+            if not possible:
+                return False
+
+    # check boxes
+    for i0 in [0,3,6]:
+        for j0 in [0,3,6]:
+            suby = (i0 // 3) * 3
+            subx = (j0 // 3) * 3
+            sub_box = []
+            for y in range(suby, suby + 3):
+                for x in range(subx, subx + 3):
+                    sub_box.append(sudoku[y, x])
+            if not all_single_qty(sub_box):
+                return False
+            full_options = get_options_full(sudoku)
+            for i in range(i0, i0 + 3):
+                for j in range(j0, j0 + 3):
+                    full_opt = set(full_options[i,j])
+                    sub_box += full_opt
+            possible = all_available(sub_box)
+            if not possible:
+                return False
+    return True
 
 
-def get_candidates(sudoku, start, end):
-    " get candidates within two corners of a rectangle/column/row"
-    candidates = set()  #null set
+def scan_options(sudoku, range_cells):
+    # using sets to easily get the union
+    # checks the options built for each cell by get_options
+    # and performs the union with each cell in an rcb
+    first_cell, last_cell = range_cells
+    scanned = set()
     full_options = get_options_full(sudoku)
-    for i in range(start[0], end[0] + 1):
-        for j in range(start[1], end[1] + 1):
-            full_opt = set(full_options[i,j])
-            #print()
-            #print("First", i,j, candidates, full_opt)
-            candidates = candidates | full_opt # grow the list with all that we've seen
-            #print(candidates)        
-    return candidates
+    for y in range(first_cell[0], last_cell[0] + 1):
+        for x in range(first_cell[1], last_cell[1] + 1):
+            full_opt = set(full_options[y,x])
+            scanned = scanned | full_opt
+    return scanned
 
-#rcb
-def no_duplicates(rcb):
-    count = [0] * (10)
-    for x in rcb:
-        count[x] += 1
 
-    for c in count[1:]:  # exclude 0:
-        if c > 1:
+def all_single_qty(rcb):
+    # rcb = a row or column or sub-box
+    qty = count_hits(rcb)
+    for max_n in qty:  # exclude 0:
+        if max_n > 1:
             return False  # more than 1 of value
     return True
 
-def all_exist(rcb):
-    """ verify that there is at least one of each number present """
-    count = [0] * 10
-    for x in rcb:
-        count[x] += 1
-    for c in count[1:]:  # exclude 0:
-        #print(c)
-        if c == 0:
+
+def all_available(rcb):
+    # rcb = a row or column or sub-box
+    qty = count_hits(rcb)
+    for min_n in qty:  # exclude 0:
+        if min_n == 0:
             return False
     return True
+
+
+def count_hits(rcb):
+    # used by all_available() and all_single_qty()
+    # rcb = a row or column or sub-box
+    qty = [0] * 9
+    for value in rcb:
+        if value > 0:  # no need to check for 0
+            qty[value-1] += 1  # if we see 1, save in pos 0, if we see 9, save in pos 8
+    return qty
 
 
 def is_move_valid(sudoku, y, x, possible):
@@ -334,9 +327,11 @@ def is_move_valid(sudoku, y, x, possible):
 
 
 def sudoku_solver(sudoku):
+    #for i in range(1):
+    #    options = get_options(sudoku)
+    #    sudoku = solve_singles(options, sudoku)
+    #    sudoku = hidden_singles(sudoku)
     loop_flag = True
-    if not check_possible(sudoku):
-        return -1 * np.ones_like(sudoku)
     while loop_flag:
         start = sudoku.copy()
         sudoku = hidden_singles(sudoku)
@@ -353,9 +348,11 @@ def sudoku_solver(sudoku):
             loop_flag = False
 
     # this is a slow check, but it can catch some unsolvable cases
+    # this adds 1 second to solving hard tests but
+    # solves 2 of my additional extreme tests
     if is_solved(sudoku):
         return sudoku
-    elif not check_possible(sudoku):
+    elif not check_valid_state(sudoku):
         return -1 * np.ones_like(sudoku)
 
     # if not, got to try brute-force but... (may take long)
@@ -378,13 +375,13 @@ def main():
 
         count = 0
         main_start_time = time.process_time()
+        print(difficulty)
         for i in range(len(sudokus)):
         #for i in [10]:
             sudoku = sudokus[i].copy()
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
             end_time = time.process_time()
-
 
             if np.array_equal(your_solution, solutions[i]):
                 #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
@@ -393,8 +390,8 @@ def main():
             else:
                 print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
                 print(your_solution)
-        print()
         main_end_time = time.process_time()
         print("total run time :", main_end_time-main_start_time)
+        print()
 
 main()
