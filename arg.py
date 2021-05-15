@@ -8,6 +8,7 @@ for solution in solutions:
     print(solution)
     print()        
     print(sudokus[counter])
+    print(sudokus[counter].count('0'))
     print()
     print()
     counter = counter + 1
