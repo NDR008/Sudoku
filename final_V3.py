@@ -244,16 +244,16 @@ def check_possible(sudoku):
         for j in range(9):
             inds = [(i, j) for i in range(9)]
             cols_set.append(inds)
-            
         # # check rows and columns
         type_ = ['row', 'col']
         for t, inds_set in enumerate([rows_set, cols_set]):
             for k, inds in enumerate(inds_set):
                 arr = [sudoku[i][j] for i, j in inds]
-                if not no_duplicates(sudoku, arr):
+                if not no_duplicates(arr):
                     print("duplicate1")
-                    return 
+                    return False
                 arr += list(get_candidates(sudoku, inds[0], inds[-1]))
+                print(arr)
                 possible = all_exist(arr)
                 if not possible:
                     print("not possible1")
@@ -268,7 +268,7 @@ def check_possible(sudoku):
                     for x in range(subx, subx + 3):\
                         sub_box.append(sudoku[y,x])
 
-                if not no_duplicates(sudoku, sub_box):
+                if not no_duplicates(sub_box):
                     print("duplicate1")
                     return 
                 
@@ -295,13 +295,13 @@ def get_candidates(sudoku, start, end):
             full_opt = set(full_options[i,j])
             #print()
             #print("First", i,j, candidates, full_opt)
-            candidates = candidates | full_opt
+            candidates = candidates | full_opt # grow the list with all that we've seen
             #print(candidates)        
     return candidates
 
 
 #rcb
-def no_duplicates(sudoku, rcb):
+def no_duplicates(rcb):
     count = [0] * (10)
     for x in rcb:
         count[x] += 1
@@ -321,6 +321,7 @@ def all_exist(rcb):
         if c == 0:
             return False
     return True
+
 
 def is_move_valid(sudoku, y, x, possible):
     for index in range(9):

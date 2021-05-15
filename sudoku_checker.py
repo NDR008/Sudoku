@@ -50,11 +50,12 @@ def check_possible(sudoku):
         for t, inds_set in enumerate([rows_set, cols_set]):
             for k, inds in enumerate(inds_set):
                 arr = [sudoku[i][j] for i, j in inds]
-                if not no_duplicates(sudoku, arr):
+                if not no_duplicates(arr):
                     print("duplicate1")
                     return 
                 arr += list(get_candidates(sudoku, inds[0], inds[-1]))
                 possible = all_exist(arr)
+                print(arr)
                 if not possible:
                     print("not possible1")
                     return False
@@ -68,7 +69,7 @@ def check_possible(sudoku):
                     for x in range(subx, subx + 3):\
                         sub_box.append(sudoku[y,x])
 
-                if not no_duplicates(sudoku, sub_box):
+                if not no_duplicates(sub_box):
                     print("duplicate1")
                     return 
                 
@@ -77,9 +78,9 @@ def check_possible(sudoku):
                     for j in range(j0, j0 + 3):
                         full_opt = set(full_options[i,j])
                         sub_box += full_opt
-                        print(sub_box)
+                        #print(sub_box)
                 possible = all_exist(sub_box)
-                print(possible)
+                #print(possible)
                 if not possible:
                     print("not possible1")
                     return False
@@ -101,7 +102,7 @@ def get_candidates(sudoku, start, end):
 
 
 #rcb
-def no_duplicates(sudoku, rcb):
+def no_duplicates(rcb):
     count = [0] * (10)
     for x in rcb:
         count[x] += 1
