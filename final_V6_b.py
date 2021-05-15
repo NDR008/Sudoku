@@ -76,15 +76,6 @@ def hidden_singles(sudoku):
                 return -1 * np.ones_like(sudoku)
     return sudoku
 
-def all_exist(rcb):
-    #checks that all numbers are available
-    count = [0] * 10
-    for x in rcb:
-        count[x] += 1
-    for c in count[1:]:
-        if c == 0:
-            return False
-    return True
 
 def get_options_full(sudoku):
     options = {}
@@ -95,6 +86,7 @@ def get_options_full(sudoku):
             else:
                 options[(y, x)] = []
     return options
+
 
 def get_options(sudoku):
     zeros = get_zeros(sudoku)
@@ -173,6 +165,7 @@ def get_options_nkd_pairs_box(options):
 def get_options_nkd_trpl(sudoku):
     # this algo only checks rows and columns
     # it is not a perfect naked triple algo
+    # because it searches for EXACTLY 3-cell sized values
     options = get_options_nkd_pairs(sudoku)  # faster on 1 puzzle I tested
     #sub-box not working
     for row in range(9):
@@ -289,7 +282,6 @@ def check_valid_state(sudoku):
                 return False
 
     # check boxes
-
     for y0 in [0,3,6]:
         for x0 in [0,3,6]:
             sub_box = []
@@ -369,6 +361,7 @@ def is_move_valid(sudoku, y, x, possible):
 
 
 def sudoku_solver(sudoku):
+    # no gain by removing singles first
     #for i in range(1):
     #    options = get_options(sudoku)
     #    sudoku = solve_singles(options, sudoku)
@@ -383,10 +376,12 @@ def sudoku_solver(sudoku):
         #print(sudoku)
         options = get_options_nkd_trpl(sudoku)
         sudoku = solve_singles(options, sudoku)
-        
-        # maybe we solved it
-        if is_solved(sudoku):
-            return sudoku
+                
+        # maybe we solved it but if so, 
+        # zeros will be so we can skip to the backtracking
+        # which wil return fast enough
+        #if is_solved(sudoku):
+        #    return sudoku
         finish = sudoku.copy()
         
         # maybe we cannot do more...
@@ -422,7 +417,6 @@ def main():
         main_start_time = time.process_time()
         print(difficulty)
         for i in range(len(sudokus)):
-        #for i in [5]:
             sudoku = sudokus[i].copy()
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
