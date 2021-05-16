@@ -1,4 +1,5 @@
-import numpy as np  # will be re-imported just in case
+import numpy as np  # will be re-imported just in case (not 100% certain this notebook is used by the staff)
+
 
 # a way of checking if we completed the grid (assuming all rules followed)
 def is_solved(sudoku):
@@ -11,42 +12,61 @@ def get_zeros(sudoku):
     zeros_index = [(y, x) for y in range(9) for x in range(9) if sudoku[y][x] == 0]
     return zeros_index
 
+
 def blanks(sudoku):
     str_sudoku = ""
     for i in range(9):
         for j in range(9):
             a = sudoku[i][j]
             str_sudoku = str_sudoku + str(a)
-    return 81-str_sudoku.count('0')
+    return 81 - str_sudoku.count('0')
+
 
 def get_zeros_backtrack(sudoku):
-    if blanks(sudoku) > 26:           
-        row_list=[0]*9
+    # all code only sequences the cells in row-sequence and col-sequence
+    # for some reason using col-sequence slowed down those cases slightly
+    if clues(sudoku) > 26:  # it is a fudge value - 26 and it almost doesn't matter
+        row_list = [0] * 9
         for row_n, row in enumerate(sudoku):
             for cell in row:
-                if cell !=0:
+                if cell != 0:
                     row_list[row_n] += 1
-        max_R = max(row_list)
-        #print(row_list)
-        
-        # solve_order = [i[0] for i in sorted(enumerate(row_list), key=lambda k: k[1], reverse=True)]
-        # zero_index = []
-        # for y in solve_order:
-        #     for x in range(9):
-        #         if sudoku[y][x] == 0:
-        #             zero_index.append((y,x))
-                    
-        max_value = max(row_list)
-        max_index = row_list.index(max_value)                    
-                    
-        zeros_index1 = [(y, x) for y in range(max_index, 9) for x in range(9) if sudoku[y][x] == 0]
-        zeros_index2 = [(y, x) for y in range(max_index) for x in range(9) if sudoku[y][x] == 0]
+
+        max_value_r = max(row_list)
+        max_index1 = row_list.index(max_value_r)
+
+        col_list = [0] * 9
+        for x in range(9):
+            for y in range(9):
+                if sudoku[y, x] != 0:
+                    col_list[x] += 1
+
+        max_value_c = max(col_list)
+        max_index2 = col_list.index(max_value_c)
+
+        if max_index1 > max_index2:
+            zeros_index1 = [(y, x) for y in range(max_index1, 9) for x in range(9) if sudoku[y][x] == 0]
+            zeros_index2 = [(y, x) for y in range(max_index1) for x in range(9) if sudoku[y][x] == 0]
+
+        # following code is de-activated
+        else:
+            print("yes")
+            zeros_index1 = []
+            zeros_index2 = []
+            for x in range(max_index2,9):
+                for y in range(9):
+                    if sudoku[y][x] == 0:
+                        zeros_index1.append((y, x))
+            for x in range(max_index2):
+                for y in range(9):
+                    if sudoku[y][x] == 0:
+                        zeros_index2.append((y, x))
+
         zero_index = zeros_index1 + zeros_index2
-    
+
     else:
         zero_index = get_zeros(sudoku)
     return zero_index
-        
 
 
 def solve_singles(options, sudoku):
@@ -204,7 +224,7 @@ def get_options_nkd_trpl(sudoku):
     # it is not a perfect naked triple algo
     # because it searches for EXACTLY 3-cell sized values
     options = get_options_nkd_pairs(sudoku)  # faster on 1 puzzle I tested
-    #sub-box not working
+    # sub-box not working
     for row in range(9):
         for col in range(9):
             if (row, col) in options:
@@ -312,27 +332,27 @@ def check_valid_state(sudoku):
             if not all_single_qty(check_list):
                 return False
 
-            range_cells = (index[0], index[len(index)-1])
+            range_cells = (index[0], index[len(index) - 1])
             check_list += list(scan_options(sudoku, range_cells))
             possible = all_available(check_list)
             if not possible:
                 return False
 
     # check boxes
-    for y0 in [0,3,6]:
-        for x0 in [0,3,6]:
+    for y0 in [0, 3, 6]:
+        for x0 in [0, 3, 6]:
             sub_box = []
             for y in range(y0, y0 + 3):
                 for x in range(x0, x0 + 3):
                     sub_box.append(sudoku[y, x])
-                    #all the values of a sub-box
+                    # all the values of a sub-box
             if not all_single_qty(sub_box):
                 return False
 
             full_options = get_options_full(sudoku)
             for y in range(y0, y0 + 3):
                 for x in range(x0, x0 + 3):
-                    full_opt = set(full_options[y,x])
+                    full_opt = set(full_options[y, x])
                     sub_box += full_opt
                     # besides the values we, if we add the options
                     # do we have no more
@@ -380,7 +400,7 @@ def count_hits(rcb):
     qty = [0] * 9
     for value in rcb:
         if value > 0:  # no need to check for 0
-            qty[value-1] += 1  # if we see 1, save in pos 0, if we see 9, save in pos 8
+            qty[value - 1] += 1  # if we see 1, save in pos 0, if we see 9, save in pos 8
     return qty
 
 
@@ -406,7 +426,7 @@ def sort_by_values_len(d):
 
 def sudoku_solver(sudoku):
     # no gain by removing singles first
-    #for i in range(1):
+    # for i in range(1):
     #    options = get_options(sudoku)
     #    sudoku = solve_singles(options, sudoku)
     #    sudoku = hidden_singles(sudoku)
@@ -417,17 +437,17 @@ def sudoku_solver(sudoku):
         # hidden singles can generate -1s
         if np.any(sudoku == -1):
             return -1 * np.ones_like(sudoku)
-        #print(sudoku)
+        # print(sudoku)
         options = get_options_nkd_trpl(sudoku)
         sudoku = solve_singles(options, sudoku)
-                
+
         # maybe we solved it but if so, 
         # zeros will be so we can skip to the backtracking
         # which wil return fast enough
-        #if is_solved(sudoku):
+        # if is_solved(sudoku):
         #    return sudoku
         finish = sudoku.copy()
-        
+
         # maybe we cannot do more...
         if np.array_equal(start, finish):
             loop_flag = False
@@ -440,7 +460,7 @@ def sudoku_solver(sudoku):
     elif not check_valid_state(sudoku):
         return -1 * np.ones_like(sudoku)
     # if not, got to try brute-force but... (may take long)
-    #options = get_options_nkd_trpl(sudoku)
+    # options = get_options_nkd_trpl(sudoku)
     options = get_options_nkd_trpl(sudoku)
     zeros = get_zeros_backtrack(sudoku)
     sudoku = back_tracker(options, zeros, sudoku)
@@ -462,14 +482,14 @@ def main():
         main_start_time = time.process_time()
         print(difficulty)
         for i in range(len(sudokus)):
-        #for i in [8]:
+            # for i in [8]:
             sudoku = sudokus[i].copy()
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)
             end_time = time.process_time()
 
             if np.array_equal(your_solution, solutions[i]):
-                #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
+                # print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
                 print(end_time - start_time)
                 count += 1
             else:
@@ -477,7 +497,9 @@ def main():
                 print(your_solution)
                 print(solutions[i])
         main_end_time = time.process_time()
-        print("total run time :", main_end_time-main_start_time)
+        print("total run time :", main_end_time - main_start_time)
         print()
-    print(time.process_time()-main_start_time)
+    print(time.process_time() - master)
+
+
 main()

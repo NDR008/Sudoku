@@ -1,0 +1,326 @@
+Example mendium 10
+
+a = [[3,4,6,7,2,5,9,8,1],
+     [0,2,7,9,4,8,5,0,6],
+     [9,5,0,0,1,6,7,0,2],
+     [0,7,4,1,5,0,3,6,8],
+     [8,0,0,0,3,7,1,5,4],
+     [5,3,1,0,6,4,2,7,9],
+     [6,9,0,4,7,1,8,0,5],
+     [0,0,0,5,0,3,6,1,7],
+     [0,0,5,6,8,0,4,9,3]]
+	 
+	 
+	[[3 4 6 7 2 5 9 8 1]
+	 [1 2 7 9 4 8 5 3 6]
+	 [9 5 8 3 1 6 7 4 2]
+	 [2 7 4 1 5 9 3 6 8]
+	 [8 6 9 2 3 7 1 5 4]
+	 [5 3 1 8 6 4 2 7 9]
+	 [6 9 3 4 7 1 8 2 5]
+	 [4 8 2 5 9 3 6 1 7]
+	 [7 1 5 6 8 2 4 9 3]]	 
+	 
+	                 popularity[0] = popularity[0] + 1
+            elif sudoku[y_pos][x_pos] == 2:
+                popularity[1] = popularity[1] + 1
+            elif sudoku[y_pos][x_pos] == 3:
+                popularity[2] = popularity[2] + 1
+            elif sudoku[y_pos][x_pos] == 4:
+                popularity[3] = popularity[3] + 1
+            elif sudoku[y_pos][x_pos] == 5:
+                popularity[4] = popularity[4] + 1
+            elif sudoku[y_pos][x_pos] == 6:
+                popularity[5] = popularity[5] + 1
+            elif sudoku[y_pos][x_pos] == 7:
+                popularity[6] = popularity[6] + 1
+            elif sudoku[y_pos][x_pos] == 8:
+                popularity[7] = popularity[7] + 1
+            elif sudoku[y_pos][x_pos] == 9:
+                popularity[8] = popularity[8] + 1
+
+
+PS C:\Users\nadir\Documents\lessons\sudoku> & C:/Users/nadir/anaconda3/python.exe c:/Users/nadir/Documents/lessons/sudoku/trial2.py
+Testing very_easy sudokus
+[OK] Test very_easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 12 This sudoku took 0.015625 seconds to solve.
+[OK] Test very_easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 very_easy sudokus correct
+Testing easy sudokus
+[OK] Test easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 12 This sudoku took 0.015625 seconds to solve.
+[OK] Test easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 easy sudokus correct
+Testing medium sudokus
+[OK] Test medium sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 5 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 10 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 12 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 13 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 medium sudokus correct
+Testing hard sudokus
+[OK] Test hard sudoku number 0 This sudoku took 7.953125 seconds to solve.
+[OK] Test hard sudoku number 1 This sudoku took 93.328125 seconds to solve.
+[OK] Test hard sudoku number 2 This sudoku took 28.09375 seconds to solve.
+[OK] Test hard sudoku number 3 This sudoku took 3.53125 seconds to solve.
+[OK] Test hard sudoku number 4 This sudoku took 12.5625 seconds to solve.
+[OK] Test hard sudoku number 5 This sudoku took 63.671875 seconds to solve.
+[OK] Test hard sudoku number 6 This sudoku took 2.265625 seconds to solve.
+[OK] Test hard sudoku number 7 This sudoku took 0.875 seconds to solve.
+[OK] Test hard sudoku number 8 This sudoku took 6.578125 seconds to solve.
+[OK] Test hard sudoku number 9 This sudoku took 9.734375 seconds to solve.
+[OK] Test hard sudoku number 10 This sudoku took 135.875 seconds to solve.
+[OK] Test hard sudoku number 11 This sudoku took 83.265625 seconds to solve.
+[OK] Test hard sudoku number 12 This sudoku took 32.4375 seconds to solve.
+[OK] Test hard sudoku number 13 This sudoku took 0.5625 seconds to solve.
+[OK] Test hard sudoku number 14 This sudoku took 67.828125 seconds to solve.
+15/15 hard sudokus correct
+
+
+
+PS C:\Users\nadir\Documents\lessons\sudoku> & C:/Users/nadir/anaconda3/python.exe c:/Users/nadir/Documents/lessons/sudoku/trial3.py
+Testing very_easy sudokus
+[OK] Test very_easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 3 This sudoku took 0.015625 seconds to solve.
+[OK] Test very_easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 12 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 very_easy sudokus correct
+Testing easy sudokus
+[OK] Test easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 8 This sudoku took 0.015625 seconds to solve.
+[OK] Test easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 12 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 easy sudokus correct
+Testing medium sudokus
+[OK] Test medium sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 5 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 12 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 medium sudokus correct
+Testing hard sudokus
+[OK] Test hard sudoku number 0 This sudoku took 5.78125 seconds to solve.
+[OK] Test hard sudoku number 1 This sudoku took 67.515625 seconds to solve.
+[OK] Test hard sudoku number 2 This sudoku took 18.453125 seconds to solve.
+[OK] Test hard sudoku number 3 This sudoku took 2.625 seconds to solve.
+[OK] Test hard sudoku number 4 This sudoku took 8.71875 seconds to solve.
+[OK] Test hard sudoku number 5 This sudoku took 43.640625 seconds to solve.
+[OK] Test hard sudoku number 6 This sudoku took 1.6875 seconds to solve.
+[OK] Test hard sudoku number 7 This sudoku took 0.5625 seconds to solve.
+[OK] Test hard sudoku number 8 This sudoku took 4.4375 seconds to solve.
+[OK] Test hard sudoku number 9 This sudoku took 6.90625 seconds to solve.
+[OK] Test hard sudoku number 10 This sudoku took 84.515625 seconds to solve.
+[OK] Test hard sudoku number 11 This sudoku took 56.765625 seconds to solve.
+[OK] Test hard sudoku number 12 This sudoku took 22.203125 seconds to solve.
+[OK] Test hard sudoku number 13 This sudoku took 0.5 seconds to solve.
+[OK] Test hard sudoku number 14 This sudoku took 45.65625 seconds to solve.
+15/15 hard sudokus correct
+
+
+a = [[8,0,0,0,0,0,0,0,0],
+     [0,0,3,6,0,0,0,0,0],
+     [0,7,0,0,9,0,2,0,0],
+     [0,5,0,0,0,7,0,0,0],
+     [0,0,0,0,4,5,7,0,0],
+     [0,0,0,1,0,0,0,3,0],
+     [0,0,1,0,0,0,0,6,8],
+     [0,0,8,5,0,0,0,1,0],
+     [0,9,0,0,0,0,4,0,0]]
+	 
+	 
+	 
+	 runfile('C:/Users/nadir/Documents/lessons/sudoku/trial4.py', wdir='C:/Users/nadir/Documents/lessons/sudoku')
+Testing very_easy sudokus
+[OK] Test very_easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 3 This sudoku took 0.015625 seconds to solve.
+[OK] Test very_easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 12 This sudoku took 0.015625 seconds to solve.
+[OK] Test very_easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test very_easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 very_easy sudokus correct
+Testing easy sudokus
+[OK] Test easy sudoku number 0 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 4 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 6 This sudoku took 0.015625 seconds to solve.
+[OK] Test easy sudoku number 7 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 11 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 12 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test easy sudoku number 14 This sudoku took 0.0 seconds to solve.
+15/15 easy sudokus correct
+Testing medium sudokus
+[OK] Test medium sudoku number 0 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 1 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 2 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 3 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 4 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 5 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 6 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 7 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 8 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 9 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 10 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 11 This sudoku took 0.015625 seconds to solve.
+[OK] Test medium sudoku number 12 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 13 This sudoku took 0.0 seconds to solve.
+[OK] Test medium sudoku number 14 This sudoku took 0.015625 seconds to solve.
+15/15 medium sudokus correct
+Testing hard sudokus
+[OK] Test hard sudoku number 0 This sudoku took 2.9375 seconds to solve.
+[OK] Test hard sudoku number 1 This sudoku took 37.421875 seconds to solve.
+[OK] Test hard sudoku number 2 This sudoku took 11.609375 seconds to solve.
+[OK] Test hard sudoku number 3 This sudoku took 1.421875 seconds to solve.
+[OK] Test hard sudoku number 4 This sudoku took 5.515625 seconds to solve.
+[OK] Test hard sudoku number 5 This sudoku took 26.453125 seconds to solve.
+[OK] Test hard sudoku number 6 This sudoku took 0.921875 seconds to solve.
+[OK] Test hard sudoku number 7 This sudoku took 0.34375 seconds to solve.
+[OK] Test hard sudoku number 8 This sudoku took 2.46875 seconds to solve.
+[OK] Test hard sudoku number 9 This sudoku took 3.859375 seconds to solve.
+[OK] Test hard sudoku number 10 This sudoku took 55.203125 seconds to solve.
+[OK] Test hard sudoku number 11 This sudoku took 32.84375 seconds to solve.
+[OK] Test hard sudoku number 12 This sudoku took 11.953125 seconds to solve.
+[OK] Test hard sudoku number 13 This sudoku took 0.296875 seconds to solve.
+[OK] Test hard sudoku number 14 This sudoku took 26.65625 seconds to solve.
+15/15 hard sudokus correct
+
+
+Trial 5
+random try 1:
+Testing hard sudokus
+[OK] Test hard sudoku number 0 This sudoku took 2.9375 seconds to solve.
+[OK] Test hard sudoku number 1 This sudoku took 36.515625 seconds to solve.
+[OK] Test hard sudoku number 2 This sudoku took 19.0625 seconds to solve.
+[OK] Test hard sudoku number 3 This sudoku took 1.953125 seconds to solve.
+[OK] Test hard sudoku number 4 This sudoku took 0.0625 seconds to solve.
+[OK] Test hard sudoku number 5 This sudoku took 40.890625 seconds to solve.
+[OK] Test hard sudoku number 6 This sudoku took 1.3125 seconds to solve.
+[OK] Test hard sudoku number 7 This sudoku took 2.109375 seconds to solve.
+[OK] Test hard sudoku number 8 This sudoku took 2.578125 seconds to solve.
+[OK] Test hard sudoku number 9 This sudoku took 9.421875 seconds to solve.
+[OK] Test hard sudoku number 10 This sudoku took 9.6875 seconds to solve.
+[OK] Test hard sudoku number 11 This sudoku took 34.03125 seconds to solve.
+[OK] Test hard sudoku number 12 This sudoku took 11.9375 seconds to solve.
+[OK] Test hard sudoku number 13 This sudoku took 0.296875 seconds to solve.
+[OK] Test hard sudoku number 14 This sudoku took 26.4375 seconds to solve.
+15/15 hard sudokus correct
+
+Trial 5
+random try 2 (shuffer >3):
+Testing hard sudokus
+[OK] Test hard sudoku number 0 This sudoku took 2.984375 seconds to solve.
+[OK] Test hard sudoku number 1 This sudoku took 36.921875 seconds to solve.
+[OK] Test hard sudoku number 2 This sudoku took 10.46875 seconds to solve.
+[OK] Test hard sudoku number 3 This sudoku took 0.6875 seconds to solve.
+[OK] Test hard sudoku number 4 This sudoku took 4.953125 seconds to solve.
+[OK] Test hard sudoku number 5 This sudoku took 23.8125 seconds to solve.
+[OK] Test hard sudoku number 6 This sudoku took 0.96875 seconds to solve.
+[OK] Test hard sudoku number 7 This sudoku took 2.078125 seconds to solve.
+[OK] Test hard sudoku number 8 This sudoku took 1.578125 seconds to solve.
+[OK] Test hard sudoku number 9 This sudoku took 14.484375 seconds to solve.
+[OK] Test hard sudoku number 10 This sudoku took 11.21875 seconds to solve.
+[OK] Test hard sudoku number 11 This sudoku took 31.578125 seconds to solve.
+[OK] Test hard sudoku number 12 This sudoku took 12.109375 seconds to solve.
+[OK] Test hard sudoku number 13 This sudoku took 0.296875 seconds to solve.
+[OK] Test hard sudoku number 14 This sudoku took 26.703125 seconds to solve.
+15/15 hard sudokus correct
+
+Trial 6
+Testing hard sudokus
+[OK] Test hard sudoku number 0 0 This sudoku took 3.0 seconds to solve.
+[OK] Test hard sudoku number 1 0 This sudoku took 4.984375 seconds to solve.
+[OK] Test hard sudoku number 2 0 This sudoku took 5.6875 seconds to solve.
+[OK] Test hard sudoku number 3 0 This sudoku took 2.15625 seconds to solve.
+[OK] Test hard sudoku number 4 0 This sudoku took 3.75 seconds to solve.
+[OK] Test hard sudoku number 5 0 This sudoku took 9.296875 seconds to solve.
+[OK] Test hard sudoku number 6 0 This sudoku took 2.0625 seconds to solve.
+[OK] Test hard sudoku number 7 0 This sudoku took 2.234375 seconds to solve.
+[OK] Test hard sudoku number 8 0 This sudoku took 3.125 seconds to solve.
+[OK] Test hard sudoku number 9 0 This sudoku took 4.640625 seconds to solve.
+[OK] Test hard sudoku number 10 0 This sudoku took 56.71875 seconds to solve.
+[OK] Test hard sudoku number 11 0 This sudoku took 4.625 seconds to solve.
+[OK] Test hard sudoku number 12 0 This sudoku took 14.0625 seconds to solve.
+[OK] Test hard sudoku number 13 0 This sudoku took 2.375 seconds to solve.
+[OK] Test hard sudoku number 14 0 This sudoku took 2.09375 seconds to solve.
+total run time : 120.8125

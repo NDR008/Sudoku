@@ -21,9 +21,9 @@ def main():
     sudoku = sudokus[puzzle].copy()
     solution = solutions[puzzle].copy()
 
-    print("Sudoku Puzzle")
-    print(sudoku)
-    print()
+    #print("Sudoku Puzzle")
+    #print(sudoku)
+    #print()
     options = get_options(sudoku)
     row_vals = val_can_go_row(sudoku)
     col_vals = val_can_go_col(sudoku)
