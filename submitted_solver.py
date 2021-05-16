@@ -1,5 +1,5 @@
 import numpy as np
-# will be re-imported just in case (not 100% certain this notebook is used by the staff)
+# will be re-imported just in case
 
 
 # a way of checking if we completed the grid (assuming all rules followed)
