@@ -383,18 +383,18 @@ def sudoku_solver(sudoku):
         # hidden singles can generate -1 entries due to invalid sudoku
         if np.any(sudoku == -1):
             return -1 * np.ones_like(sudoku)  # acts like a "break"
-        options = get_options_nkd_trpl(sudoku)
+        options = get_options_nkd_pairs(sudoku)
         sudoku = solve_for_options(options, sudoku)
         finish = sudoku.copy()
         # check if it is worth to loop again (may cause 1 extra redundant loop
         if np.array_equal(start, finish):
             loop_flag = False
-    if is_solved(sudoku):
+    if is_solved(sudoku) and check_valid_state(sudoku):  # check if we it is full but an 81 clued illegal puzzle
         return sudoku
     # check if this is solvable before back-tracking
-    elif not check_valid_state(sudoku):
+    elif not check_valid_state(sudoku):  # check if it is simple not solvable
         return -1 * np.ones_like(sudoku)
-    options = get_options_nkd_trpl(sudoku)  # use the least options for back-tracking
+    options = get_options_nkd_pairs(sudoku)  # use the least options for back-tracking
     zeros = get_zeros_backtrack(sudoku)  # use the least options for back-tracking
     sudoku = back_tracker(options, zeros, sudoku)
     if not is_solved(sudoku):

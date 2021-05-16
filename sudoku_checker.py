@@ -11,8 +11,8 @@ def as_string(sudoku):
 
 def main():
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    diff = 2
-    puzzle = 7
+    diff = 1
+    puzzle = 5
     difficulty = difficulties[diff]
 
     sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -22,7 +22,7 @@ def main():
     solution = solutions[puzzle].copy()
 
     #print("Sudoku Puzzle")
-    #print(sudoku)
+    print(sudoku)
     #print()
     options = get_options(sudoku)
     row_vals = val_can_go_row(sudoku)
