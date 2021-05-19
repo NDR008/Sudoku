@@ -11,8 +11,8 @@ def as_string(sudoku):
 
 def main():
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    diff = 1
-    puzzle = 5
+    diff = 4
+    puzzle = 2
     difficulty = difficulties[diff]
 
     sudokus = np.load(f"data/{difficulty}_puzzle.npy")

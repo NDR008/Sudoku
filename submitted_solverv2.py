@@ -116,11 +116,14 @@ def hidden_singles(sudoku):
 
 # an options dict of each cell (for validation check of the board validity - as solvable)
 def get_options_full(sudoku):
+    hidden_options = hidden_pairs(sudoku)
     options = {}
     for y in range(9):
         for x in range(9):
             if sudoku[y][x] == 0:
-                options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
+                #options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
+                options[(y, x)] = hidden_options[(y ,x)]
+
             else:
                 options[(y, x)] = []
     return options
@@ -202,33 +205,58 @@ def get_options_nkd_pairs_box(options):
     return options
 
 
-def hidden_pairs(options):
-    #hard coded pair sets to search for
-    sub_sets =  [{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
-                {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 8}, {2, 9}, {3, 4}, {3, 5}, {3, 6},{3, 7}, {3, 8}, {3, 9}, 
-                {4, 5}, {4, 6}, {4, 7}, {4, 8}, {4, 9}, {5, 6}, {5, 7}, {5, 8},{5, 9},{6, 7}, {6, 8}, {6, 9}, {7, 8}, {7, 9}, {8, 9}]
+def hidden_pairs(sudoku):
+    options = get_options(sudoku)
+    sub_sets = [{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
+                {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 8}, {2, 9}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {3, 8}, {3, 9},
+                {4, 5}, {4, 6}, {4, 7}, {4, 8}, {4, 9}, {5, 6}, {5, 7}, {5, 8}, {5, 9}, {6, 7}, {6, 8}, {6, 9}, {7, 8},
+                {7, 9}, {8, 9}]
 
-    row = []
-    for x in range(4,5):
-        for y in range(0,9):
-            k = (y,x)
-            row.append(options.get(k))
+    for x in range(9):
+        unit = []
+        for y in range(9):
+            k = (y, x)
+            unit.append(options.get(k))
 
-            location = []
+        location = []
+        for s_found, sub_set in enumerate(sub_sets):
+            count = 0
             tmp = []
-            for s_found, sub_set in enumerate(sub_sets):
-                count = 0
-                for r_found, row_content in enumerate(row):
-                    if sub_set.issubset(row_content):
-                        #print("found ", sub_set, "in", row_content, "at row", r_found)
-                        count += 1
-                        tmp.append((r_found, x))
-                        set_found = sub_set
-                if count == 2:
-                    a = list(sub_set)
-                    tmp[0], tmp[1]
-                    location.append((a, tmp[0], tmp[1]))
-    
+            for r_found, row_content in enumerate(unit):
+                if row_content is None:
+                    continue
+                elif sub_set.issubset(row_content):
+                    count += 1
+                    tmp.append((r_found, x))
+            if count == 2:
+                location.append((sub_set, tmp[0], tmp[1]))
+                tmp.clear()
+
+        location2 = []
+        for (digits, loc1, loc2) in location:
+            found_first = 0
+            for qty, digit_number in enumerate(list(digits)):
+                count2 = 0
+                single_digit = {digit_number}
+                for r_found2, row_content2 in enumerate(unit):
+                    if row_content2 is None:
+                        continue
+                    elif single_digit.issubset(row_content2):
+                        if (r_found2, x) != loc1 and (r_found2, x) != loc2:
+                            count2 = 0
+                            found_first = 0
+                            break
+                        else:
+                            count2 += 1
+                if count2 == 2 and found_first != 1:
+                    found_first += 1
+                elif count2 == 2 and found_first == 1:
+                    location2.append((list(digits), loc1, loc2))
+        for (values, loc1, loc2) in location2:
+            options[loc1] = list(values)
+            options[loc2] = list(values)
+    return options
+
 
 # search and remove based psuedo-naked triples (in rows, cols)
 def get_options_nkd_trpl(sudoku):
@@ -410,17 +438,21 @@ def sudoku_solver(sudoku):
         # hidden singles can generate -1 entries due to invalid sudoku
         if np.any(sudoku == -1):
             return -1 * np.ones_like(sudoku)  # acts like a "break"
+        #options = get_options_nkd_pairs(sudoku)
+        #sudoku = solve_for_options(options, sudoku)
         options = get_options_nkd_pairs(sudoku)
         sudoku = solve_for_options(options, sudoku)
         finish = sudoku.copy()
         # check if it is worth to loop again (may cause 1 extra redundant loop
         if np.array_equal(start, finish):
             loop_flag = False
-    if is_solved(sudoku) and check_valid_state(sudoku):  # check if we it is full but an 81 clued illegal puzzle
-        return sudoku
+    #if is_solved(sudoku) and check_valid_state(sudoku):  # check if we it is full but an 81 clued illegal puzzle
+        #return sudoku
     # check if this is solvable before back-tracking
-    elif not check_valid_state(sudoku):  # check if it is simple not solvable
+    if not check_valid_state(sudoku):  # check if it is simply not solvable
         return -1 * np.ones_like(sudoku)
+    elif is_solved(sudoku):
+        return sudoku
     options = get_options_nkd_pairs(sudoku)  # use the least options for back-tracking
     zeros = get_zeros_backtrack(sudoku)  # use the least options for back-tracking
     sudoku = back_tracker(options, zeros, sudoku)
@@ -432,7 +464,7 @@ def sudoku_solver(sudoku):
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    difficulties = ['hard', 'extreme']
+    #difficulties = ['extreme']
     master = time.process_time()
     for difficulty in difficulties:
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -442,7 +474,7 @@ def main():
         main_start_time = time.process_time()
         print(difficulty)
         for i in range(len(sudokus)):
-        # for i in [8]:
+        #for i in [10]:
             sudoku = sudokus[i].copy()
             start_time = time.process_time()
             your_solution = sudoku_solver(sudoku)

@@ -116,15 +116,12 @@ def hidden_singles(sudoku):
 
 # an options dict of each cell (for validation check of the board validity - as solvable)
 def get_options_full(sudoku):
-    hidden_options = hidden_pairs(sudoku) # this is the most robust way of detecting a defective game
-    options = {}
+    options = hidden_pairs(sudoku) # this is the most robust way of detecting a defective game
+
     for y in range(9):
         for x in range(9):
-            if sudoku[y][x] == 0:
+            if sudoku[y][x] != 0:
                 #options[(y, x)] = [opt for opt in range(1, 10) if is_move_valid(sudoku, y, x, opt)]
-                options[(y, x)] = hidden_options[(y ,x)]
-
-            else:
                 options[(y, x)] = []
     return options
 
@@ -141,49 +138,38 @@ def get_options(sudoku):
 # search and remove based on naked pairs (in rows, cols, boxes)
 def get_options_nkd_pairs(sudoku):
     options = get_options(sudoku)
-    options = get_options_nkd_pairs_row(options)
-    options = get_options_nkd_pairs_col(options)
-    options = get_options_nkd_pairs_box(options)
-    return options
 
-
-def get_options_nkd_pairs_row(options):
-    for row in range(9):
-        for col in range(9):
-            if (row, col) in options:
-                val = options[row, col]
-                if len(val) == 2:
-                    for col1 in range(9):
-                        if (row, col1) in options:
-                            val1 = options[row, col1]
-                            if col1 != col and len(val1) == 2 and val == val1:
-                                for col2 in range(9):
-                                    if (row, col2) in options:
-                                        if col2 != col and col2 != col1:
-                                            val2 = options[(row, col2)]
-                                            options[(row, col2)] = naked_helper(val2, val)
-    return options
-
-
-def get_options_nkd_pairs_col(options):
-    for col in range(9):
+    # converted to set equations (mostly) - no major speed difference, probably due to the mix of lists and sets
+    sub_sets = [{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
+                {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 8}, {2, 9}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {3, 8}, {3, 9},
+                {4, 5}, {4, 6}, {4, 7}, {4, 8}, {4, 9}, {5, 6}, {5, 7}, {5, 8}, {5, 9}, {6, 7}, {6, 8}, {6, 9}, {7, 8},
+                {7, 9}, {8, 9}]
+    
+    for sub_set in (sub_sets):
         for row in range(9):
-            if (row, col) in options:
-                val = options[row, col]
-                if len(val) == 2:
-                    for row1 in range(9):
-                        if (row1, col) in options:
-                            val1 = options[row1, col]
-                            if row1 != row and len(val1) == 2 and val == val1:
-                                for row2 in range(9):
-                                    if (row2, col) in options:
-                                        if row2 != row and row2 != row1:
-                                            val2 = options[(row2, col)]
-                                            options[(row2, col)] = naked_helper(val2, val)
-    return options
+            location = []    
+            for col in range(9):
+                if (row, col) in options:
+                    if set(options[(row,col)]) == sub_set:
+                        location.append((row,col))    
+                if len(location) == 2:
+                    for col in range(9):
+                        if (row,col) in options and (row,col) not in location:
+                            options[(row,col)] = naked_helper(options[(row,col)], list(sub_set))
 
+    for sub_set in (sub_sets):
+        for col in range(9):
+            location = []    
+            for row in range(9):
+                if (row, col) in options:
+                    if set(options[(row,col)]) == sub_set:
+                        location.append((row,col))    
+                if len(location) == 2:
+                    for row in range(9):
+                        if (row,col) in options and (row,col) not in location:
+                            options[(row,col)] = naked_helper(options[(row,col)], list(sub_set))
 
-def get_options_nkd_pairs_box(options):
+    #still old for-loop based value comparison
     for row in [0, 3, 6]:
         for col in [0, 3, 6]:
             for y in range(row, row + 3):
@@ -206,89 +192,96 @@ def get_options_nkd_pairs_box(options):
 
 
 def hidden_pairs(sudoku):
-    options = get_options(sudoku)
+    options = get_options_nkd_pairs(sudoku)
     sub_sets = [{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
                 {2, 3}, {2, 4}, {2, 5}, {2, 6}, {2, 7}, {2, 8}, {2, 9}, {3, 4}, {3, 5}, {3, 6}, {3, 7}, {3, 8}, {3, 9},
                 {4, 5}, {4, 6}, {4, 7}, {4, 8}, {4, 9}, {5, 6}, {5, 7}, {5, 8}, {5, 9}, {6, 7}, {6, 8}, {6, 9}, {7, 8},
                 {7, 9}, {8, 9}]
-                   
-                    
+
     # hidden pairs for row
     for y in range(9):
-        location_a = []
-        location_b = []
-        for sub_set in sub_sets:
-            count_a = 0
-            count_b = 0
-            tmp_a = []
-            tmp_b = []
+        location = []
+        for sub_set in (sub_sets):
+            count = 0
+            tmp = []
             for x in range(9):
-                if (y, x) in options:
-                    content_a = options[(y, x)]
-                    if sub_set.issubset(content_a):
-                        count_a += 1
-                        tmp_a.append((y, x))
-                if (x, y) in options:  # x/y swapped for doing the rows and columns in 1 loop
-                    content_b = options[(x, y)]
-                    if sub_set.issubset(content_b):
-                        count_b += 1
-                        tmp_b.append((x, y))
-            if count_a == 2:
-                location_a.append((sub_set, tmp_a[0], tmp_a[1]))
-                tmp_a.clear()                            
-            if count_b == 2:
-                location_b.append((sub_set, tmp_b[0], tmp_b[1]))
-                tmp_b.clear() 
-                           
+                if (y, x) not in options:
+                    continue
+                unit = options[(y, x)]
+                if sub_set.issubset(unit):
+                    count += 1
+                    tmp.append((y, x))
+            if count == 2:
+                location.append((sub_set, tmp[0], tmp[1]))
+                tmp.clear()
 
-    for y in range(9):
-        for (digits, loc1_a, loc2_a) in location_a:
-            found_first_a = 0
+
+        for (digits, loc1, loc2) in location:
+            found_first = 0
             for digit_number in (list(digits)):
-                count2_a = 0
+                count2 = 0
                 single_digit = {digit_number}
                 for x in range(9):
                     if (y, x) not in options:
                         continue
-                    content2_a = options[(y, x)]
-                    if single_digit.issubset(content2_a):
-                        if (y, x) != loc1_a and (y, x) != loc2_a:
-                            count2_a = 0
-                            found_first_a = 0
+                    unit2 = options[(y, x)]
+                    if single_digit.issubset(unit2):
+                        if (y, x) != loc1 and (y, x) != loc2:
+                            count2 = 0
+                            found_first = 0
                             break
                         else:
-                            count2_a += 1
-                if count2_a == 2 and found_first_a != 1:
-                    found_first_a += 1
-                elif count2_a == 2 and found_first_a == 1:
-                    options[loc1_a] = list(digits)
-                    options[loc2_a] = list(digits)
+                            count2 += 1
+                if count2 == 2 and found_first != 1:
+                    found_first += 1
+                elif count2 == 2 and found_first == 1:
+                    options[loc1] = list(digits)
+                    options[loc2] = list(digits)
 
-        for (digits, loc1_b, loc2_b) in location_b:
-            found_first_b = 0
+
+# hidden pairs for columns
+    for x in range(9):
+        location2 = []
+        for sub_set in (sub_sets):
+            count = 0
+            tmp = []
+            for y in range(9):
+                if (y, x) not in options:
+                    continue
+                unit = options[(y, x)]
+                if sub_set.issubset(unit):
+                    count += 1
+                    tmp.append((y, x))
+            if count == 2:
+                location.append((sub_set, tmp[0], tmp[1]))
+                tmp.clear()
+
+        for (digits, loc1, loc2) in location2:
+            found_first = 0
             for digit_number in (list(digits)):
-                count2_b = 0
+                count2 = 0
                 single_digit = {digit_number}
                 for y in range(9):
-                    if (x, y) not in options:
+                    if (y, x) not in options:
                         continue
-                    content2_b = options[(x, y)]
-                    if single_digit.issubset(content2_b):
-                        if (y, x) != loc1_b and (y, x) != loc2_b:
-                            count2_b = 0
-                            found_first_b = 0
+                    unit2 = options[(y, x)]
+                    if single_digit.issubset(unit2):
+                        if (y, x) != loc1 and (y, x) != loc2:
+                            count2 = 0
+                            found_first = 0
                             break
                         else:
-                            count2_b += 1
-                if count2_b == 2 and found_first_b != 1:
-                    found_first_b += 1
-                elif count2_b == 2 and found_first_b == 1:
-                    options[loc1_b] = list(digits)
-                    options[loc2_b] = list(digits)
+                            count2 += 1
+                if count2 == 2 and found_first != 1:
+                    found_first += 1
+                elif count2 == 2 and found_first == 1:
+                    options[loc1] = list(digits)
+                    options[loc2] = list(digits)
+    
     return options
 
 
-# search and remove based psuedo-naked triples (in rows, cols) (not used anymore)
+# search and remove based psuedo-naked triples (in rows, cols)
 def get_options_nkd_trpl(sudoku):
     # it is not a perfect naked triple algo
     # because it searches for EXACTLY 3-cell sized values
@@ -355,6 +348,8 @@ def back_tracker(valid_options, zeros, sudoku):
 
 
 def check_valid_state(sudoku):
+    options = get_options_full(sudoku)
+    
     # element_row
     rows_set = []
     for y in range(9):
@@ -376,7 +371,7 @@ def check_valid_state(sudoku):
                 return False
 
             range_cells = (index[0], index[len(index) - 1])
-            check_list += list(scan_options(sudoku, range_cells))
+            check_list += list(scan_options(options, range_cells))
             possible = all_available(check_list)
             if not possible:
                 return False
@@ -392,10 +387,9 @@ def check_valid_state(sudoku):
             if not all_single_qty(sub_box):
                 return False
 
-            full_options = get_options_full(sudoku)
             for y in range(y0, y0 + 3):
                 for x in range(x0, x0 + 3):
-                    full_opt = set(full_options[y, x])
+                    full_opt = set(options[y, x])
                     sub_box += full_opt
                     # sum sudoku values and options
             possible = all_available(sub_box)
@@ -405,15 +399,16 @@ def check_valid_state(sudoku):
 
 
 # uses the get_options to check all options ina  given row/col/box
-def scan_options(sudoku, range_cells):
+def scan_options(options, range_cells):
+    # modified to not use sudoku but directly take the options list
     # using sets to easily get the set union
     # and performs the union with each cell in an rcb
     first_cell, last_cell = range_cells
     scanned = set()
-    full_opt = get_options_full(sudoku)
+    
     for y in range(first_cell[0], last_cell[0] + 1):
         for x in range(first_cell[1], last_cell[1] + 1):
-            sub_opt = set(full_opt[y, x])
+            sub_opt = set(options[y, x])
             scanned = scanned | sub_opt
     return scanned
 
@@ -460,7 +455,8 @@ def is_move_valid(sudoku, y, x, possible):
 
 
 # main wrapper function
-def sudoku_solver(sudoku):
+def sudoku_solver(sudoku):   
+    sudoku = hidden_singles(sudoku)
     loop_flag = True
     while loop_flag:
         start = sudoku.copy()
@@ -468,25 +464,22 @@ def sudoku_solver(sudoku):
         options = get_options_nkd_pairs(sudoku)
         sudoku = solve_for_options(options, sudoku)
         # hidden singles can generate -1 entries due to invalid sudoku
-        if np.any(sudoku == -1):
-            return -1 * np.ones_like(sudoku)  # acts like a "break"
+        
+        #if np.any(sudoku == -1):
+        #    return -1 * np.ones_like(sudoku)  # acts like a "break"
+        
         #options = get_options_nkd_pairs(sudoku)
-        options = hidden_pairs(sudoku)
-        sudoku = solve_for_options(options, sudoku)
         finish = sudoku.copy()
+    
         # check if it is worth to loop again (may cause 1 extra redundant loop
         if np.array_equal(start, finish):
             loop_flag = False
-    #if is_solved(sudoku) and check_valid_state(sudoku):  # check if we it is full but an 81 clued illegal puzzle
-        #return sudoku
-    # check if this is solvable before back-tracking
-    #options = hidden_pairs(sudoku)
-    #sudoku = solve_for_options(options, sudoku)
+            
     if not check_valid_state(sudoku):  # check if it is simply not solvable
         return -1 * np.ones_like(sudoku)
     elif is_solved(sudoku):
         return sudoku
-    options = get_options_nkd_pairs(sudoku)  # use the least options for back-tracking
+    options = hidden_pairs(sudoku)  # use the least options for back-tracking
     zeros = get_zeros_backtrack(sudoku)  # use the least options for back-tracking
     sudoku = back_tracker(options, zeros, sudoku)
     if not is_solved(sudoku):
@@ -497,7 +490,7 @@ def sudoku_solver(sudoku):
 def main():
     import time
     difficulties = ['very_easy', 'easy', 'medium', 'hard', 'extreme']
-    #difficulties = ['extreme']
+    difficulties = ['hard', 'extreme']
     master = time.process_time()
     for difficulty in difficulties:
         sudokus = np.load(f"data/{difficulty}_puzzle.npy")
@@ -514,8 +507,8 @@ def main():
             end_time = time.process_time()
 
             if np.array_equal(your_solution, solutions[i]):
-                print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
-                # print(end_time - start_time)
+                #print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
+                print(end_time - start_time)
                 count += 1
             else:
                 print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
