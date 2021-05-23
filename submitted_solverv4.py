@@ -26,7 +26,7 @@ def get_zeros_backtrack(sudoku):
     # for some reason using col-sequence slowed down those cases slightly
     # could be due to the way numpy-arrays are addressed
     # or the slow down from generating the index itself.
-    if clues(sudoku) > 26:  # it is a fudge value - 26 and it almost doesn't matter
+    if clues(sudoku) > 28:  # it is a fudge value - 26 and it almost doesn't matter
         row_list = [0] * 9
         for row_n, row in enumerate(sudoku):
             for cell in row:

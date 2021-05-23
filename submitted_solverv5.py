@@ -473,8 +473,6 @@ def sudoku_solver(sudoku):
     elif is_solved(sudoku):
         return sudoku
     options = hidden_pairs(sudoku)  # use the least options for back-tracking
-
-    sudoku = solve_for_options(options, sudoku)
     zeros = get_zeros_backtrack(sudoku)  # use the least options for back-tracking
     sudoku = back_tracker(options, zeros, sudoku)
     if not is_solved(sudoku):
@@ -501,7 +499,7 @@ def main():
 
             if np.array_equal(your_solution, solutions[i]):
                 print(f"[OK] Test {difficulty}", i, "This sudoku took", end_time - start_time, "seconds.")
-                print(end_time - start_time)
+                #print(end_time - start_time)
                 count += 1
             else:
                 print(f"[[NG]] Test {difficulty}", i, "This sudoku took", end_time - start_time)
