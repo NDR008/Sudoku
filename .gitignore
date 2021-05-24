@@ -5,3 +5,5 @@
 .idea/inspectionProfiles/profiles_settings.xml
 .ipynb_checkpoints/sudoku-checkpoint.ipynb
 .vscode/settings.json
+.idea
+.ipynb_checkpoints
