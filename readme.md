@@ -6,12 +6,10 @@ Step 1: Iterate till no improvement is achieved using Hidden Singles and Naked P
 Step 2: Is a Backtracking Depth-First Search (BDFS) which follows a psuedo Greedy-first search (it picks the row with the least empty nodes). However if a puzzle has only 26 clues or less, the sequence is top left to top right, and then moving down the rows. The choice of 26 was empirically selected from the sample tests used. Other methods were considered - such as selecting the nodes with the least possible options, however this was also not universally advantage in the even that the first node would be in the top left corner the next would be the bottom right.  
 
 There were other methods adopted and later eliminated. In addition to the provided test cases, an additional set of 11 test cases were considered, referred to as "extreme" (the data has been provided as a numpy file). In the particular, the set contained two unsolvable puzzles which exposed limitations that could not be recognised by the pre-provided tests. Therefore towards the final stages of optimisation, some speed algorithmic improvments were eliminated in order to retain what is considered to be a more successful result against the mentioned troublesome extreme test cases.
-` `  
-` `  
+
 # Introduction
 The scope of this work is to implement an agent that can solve sudoku puzzles. The algorithm would be evaluated by automated testing, and thus will be tested against unknown sudoku puzzles. The activity scope was to develop an AI that can solve 9x9 Sudoku puzzles or to determine that the puzzle may not be solved in the shortest time possible, however the weighting and exact evaluation criteria were unknown.
-` `  
-` `  
+ 
 # Coding Approaching
 Optimization and data structures was done following the approach of:
 ```
@@ -32,8 +30,7 @@ Introductions algorithms aimed at detecting unsolvable puzzles by:
 
 And a hidden pairs method was introduced (which is not being employed to solve the puzzle), but rather to expose unsolvable puzzles that have too many options to solve. This method is similar to that which (Sinai, 2020) describes. The puzzle described is one that has 2 cells haked the same perfect naked triples - meaning those 3 numbers may only be in those three cells. Using the naked pairs algorithm, it exposes the flaw of the puzzle which can be then recognised by allowing the BDFS or the detection method pick-it up.
 Since the detection method consumes times that would not be needed for solvable puzzles, whereas the BDFS would always be needed for not yet solved puzzles, the BDFS method was selected.
-` `  
-` `
+
 
 ## Code Optimization Considered
 The instructions required the use of a function with a sudoku puzzle (a numpy array) passed to it as a parameter. The test script provided also iterated through the puzzles proceduraly. This influenced the idea of keeping with procedural / function based code.
@@ -82,8 +79,6 @@ sub_sets = [{1, 2}, {1, 3}, {1, 4}, {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9},
             {6, 9}, {7, 8}, {7, 9}, {8, 9}]
 ```
 
-` `
-` `  
 
 
 # Algorithm Selection
@@ -166,8 +161,7 @@ The tests were conducted on the provided very_easy to hard puzzles. In addition 
 - Times shown in seconds
 - X indicates puzzles that do not have a solution
 - Negative times are solves that were terminatedabo due to some arbitrary time limit.  
-` `  
-` `  
+
 # Algorithm Evolution
 The BDFS approach was able to solve all hard puzzles including the unsolvable ones. However there seemed to be no relation to whether the puzzle was solvable or not. Retrospective testing on the Extreme puzzles show that the method is extremely slow to solve Extreme-4.
 
