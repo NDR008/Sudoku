@@ -4,5 +4,4 @@
 .idea/sudoku.iml
 .idea/inspectionProfiles/profiles_settings.xml
 .ipynb_checkpoints/sudoku-checkpoint.ipynb
-sudoku.ipynb
-images/sudoku.png
+.vscode/settings.json
