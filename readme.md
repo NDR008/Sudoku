@@ -165,7 +165,7 @@ The tests were conducted on the provided very_easy to hard puzzles. In addition 
 # Algorithm Evolution
 The BDFS approach was able to solve all hard puzzles including the unsolvable ones. However there seemed to be no relation to whether the puzzle was solvable or not. Retrospective testing on the Extreme puzzles show that the method is extremely slow to solve Extreme-4.
 
-Algo1 to Algo4 delivered significant speed improvement on Hard-1, Hard-5 and Hard-10 as show in the following graph:
+Algo1 to Algo4 delivered significant speed improvement on Hard-1, Hard-5 and Hard-10 as show in the following graph:  
 ![Hard Allgos](hard0.png)  
   
 Algo5 to Algo7 focused on iteration of algorithms before switching to the BDFS approach. This created some overheard to some puzzles that did not need the iteration, however it still delivered mostly a peformance increase on most puzzles as shown in the following graph:  
